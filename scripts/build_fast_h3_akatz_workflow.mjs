@@ -30,7 +30,7 @@ const coreProps = (name) => ({
 });
 const relayProps = (name) => ({
   cnr_id: "h3-relay",
-  ver: "1.0.2",
+  ver: "1.0.3",
   "Node name for S&R": name,
 });
 const widget = (name, type, extra = {}) => ({

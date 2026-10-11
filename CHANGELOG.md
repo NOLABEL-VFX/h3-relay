@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 1.0.3
+
+- Publish the current stable nodes to Comfy Registry, including
+  `LabsH3PrepareVideo`, `LabsH3TrimOutput`, and `H3RelayWindowedEdit` used by
+  the adaptive character-swap example workflow.
+- Reduce the final character-swap window to the remaining source frames,
+  with the required history and H3 frame-grid alignment.
+- Distinguish literal widget lists and dictionaries from graph links when
+  computing cache ancestry, avoiding crashes in third-party workflows.
 
 - Add adjustable character-swap windows with reference conditioning, generated
   AV history, exact source-frame accounting, and per-window previews.
