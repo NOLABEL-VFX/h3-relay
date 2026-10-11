@@ -31,7 +31,7 @@ def signature(execution_prompt, node_id, expand_pixels):
     memo = {}
 
     def ancestry(link, visited=()):
-        if not isinstance(link, list) or len(link) != 2 or link[0] not in graph:
+        if not removal_cache.is_graph_link(link, graph):
             return link
         key = link[0]
         if key in visited:
@@ -64,7 +64,8 @@ def signature(execution_prompt, node_id, expand_pixels):
                 "images": ancestry(own["inputs"].get("images")),
                 "mask": ancestry(own["inputs"].get("mask"))}
         # Literal IMAGE/MASK inputs are not a verifiable persisted graph.
-        if not all(isinstance(own["inputs"].get(k), list) for k in ("images", "mask")):
+        if not all(removal_cache.is_graph_link(own["inputs"].get(k), graph)
+                   for k in ("images", "mask")):
             return None
         return hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     except (LookupError, OSError, TypeError):

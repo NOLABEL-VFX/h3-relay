@@ -89,6 +89,21 @@ class PreparedMaskTests(unittest.TestCase):
         self.assertIsNone(self.cache.signature(self.graph, "7", 1))
         self.assertEqual(self.node.check_lazy_status(None, None, 1, **self.hidden), ["images", "mask"])
 
+    def test_literal_options_are_supported_and_invalidate_prepared_masks(self):
+        self.graph["5"]["inputs"]["options"] = [{"threshold": 0.2}, {"threshold": 0.4}]
+        original = self.cache.signature(self.graph, "7", 1)
+        self.assertIsNotNone(original)
+        self.assertEqual(original, self.cache.signature(self.graph, "7", 1))
+        self.graph["5"]["inputs"]["options"][0]["threshold"] = 0.3
+        self.assertNotEqual(original, self.cache.signature(self.graph, "7", 1))
+
+    def test_literal_root_inputs_cannot_restore_prepared_masks(self):
+        for value in ([{"pixels": 1}, {"pixels": 2}], [[1], [2]],
+                      ["2", "literal"], ["2", True], ["missing", 0]):
+            with self.subTest(value=value):
+                self.graph["7"]["inputs"]["images"] = value
+                self.assertIsNone(self.cache.signature(self.graph, "7", 1))
+
     def test_damaged_prepared_payload_is_rejected(self):
         self.node.apply(torch.zeros(3, 32, 32, 3), torch.zeros(3, 32, 32), 1, **self.hidden)
         tensor = next(self.directory.rglob("prepared/**/*.pt"))

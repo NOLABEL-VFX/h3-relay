@@ -194,6 +194,57 @@ class CacheTests(unittest.TestCase):
         model.write_bytes(b"second model")
         self.assertNotEqual(initial, m.configuration_key(self.frames, self.frames[:1], settings, graph, "18"))
 
+    def test_literal_containers_in_model_ancestry_are_hashed_as_data(self):
+        # Third-party model nodes may carry JSON widget data, not connections.
+        graph = {"18": {"inputs": {"model": ["2", 0]}},
+                 "2": {"class_type": "ModelOptions", "inputs": {"model": ["1", 0]}},
+                 "1": {"class_type": "UNETLoader", "inputs": {"unet_name": "model.safetensors"}}}
+        def key():
+            return m.configuration_key(self.frames, self.frames[:1], {}, graph, "18")
+        literals = [
+            [{"strength": 1.0}, {"strength": 0.5}],
+            [["not", "a-link"], [1, 2]],
+            {"nested": [{"enabled": True}, {"enabled": False}]},
+            ["1", {"strength": 1.0}], ["1", "literal"], ["1", True],
+            ["1", -1], ["missing-node", 0],
+        ]
+        for literal in literals:
+            with self.subTest(literal=literal):
+                graph["2"]["inputs"]["options"] = literal
+                original = key()
+                # JSON round trips preserve the exact cache identity.
+                graph["2"]["inputs"]["options"] = json.loads(json.dumps(literal))
+                self.assertEqual(original, key())
+                graph["2"]["inputs"]["options"] = {"changed": literal}
+                self.assertNotEqual(original, key())
+
+    def test_literal_pair_that_looks_like_a_node_id_does_not_traverse(self):
+        graph = {"18": {"inputs": {"model": ["1", 0]}},
+                 "1": {"class_type": "ModelOptions", "inputs": {
+                     "options": ["1", {"value": 2}]}}}
+        # The string happens to match this node, but this is data, not a cycle.
+        key = m.configuration_key(self.frames, self.frames[:1], {}, graph, "18")
+        self.assertEqual(len(key), 64)
+        graph["1"]["inputs"]["options"] = ["1", 0]
+        with self.assertRaisesRegex(ValueError, "cycle"):
+            m.configuration_key(self.frames, self.frames[:1], {}, graph, "18")
+
+    def test_valid_connections_keep_existing_cache_identity(self):
+        import hashlib
+        graph = {"18": {"inputs": {"model": ["1", 0]}},
+                 "1": {"class_type": "ModelOptions", "inputs": {"strength": 0.5}}}
+        original_payload = {"version": m.CACHE_VERSION,
+            "source": m.tensor_hash(self.frames), "anchor": m.tensor_hash(self.frames[:1]),
+            "settings": {}, "models": {
+                "model": {"class": "ModelOptions", "inputs": {"strength": 0.5},
+                          "files": {}, "output": 0},
+                "clip": None, "video_vae": None, "audio_vae": None}}
+        original = hashlib.sha256(json.dumps(original_payload, sort_keys=True,
+                                             separators=(",", ":")).encode()).hexdigest()
+        self.assertEqual(original, m.configuration_key(self.frames, self.frames[:1], {}, graph, "18"))
+        graph["18"]["inputs"]["model"][1] = 1
+        self.assertNotEqual(original, m.configuration_key(self.frames, self.frames[:1], {}, graph, "18"))
+
     def test_other_workflows_and_path_inputs_cannot_restore_checkpoint(self):
         record = self.save()
         other = m.scope_key("18", {"workflow": {"id": "two"}})

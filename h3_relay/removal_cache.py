@@ -42,6 +42,19 @@ def tensor_hash(tensor):
     return digest.hexdigest()
 
 
+def is_graph_link(value, graph):
+    """Recognize API connections without mistaking JSON widget lists for links.
+
+    ComfyUI connections are [string node ID, nonnegative integer output index].
+    Validate types before dictionary membership: two-item literal lists can
+    start with an unhashable dict or list. Keep literals intact in the digest.
+    """
+    return (isinstance(value, list) and len(value) == 2
+            and isinstance(value[0], str)
+            and type(value[1]) is int and value[1] >= 0
+            and value[0] in graph)
+
+
 def configuration_key(source, anchor, settings, execution_prompt, node_id):
     """Hash actual pixels plus the model/encoder/VAE ancestry and file versions."""
     import folder_paths
@@ -50,7 +63,7 @@ def configuration_key(source, anchor, settings, execution_prompt, node_id):
               "vae_name": "vae", "lora_name": "loras", "ckpt_name": "checkpoints"}
 
     def ancestry(link, visited=()):
-        if not isinstance(link, list) or len(link) != 2 or link[0] not in graph:
+        if not is_graph_link(link, graph):
             return link
         key = link[0]
         if key in visited:
