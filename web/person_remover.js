@@ -1,7 +1,7 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const NODES = new Set(["H3RelayPersonRemover", "H3RelayWindowedEdit"]);
+const NODES = new Set(["H3RelayPersonRemover", "H3RelayWindowedEdit", "H3RelayReviewWindows"]);
 const mounts = new Set();
 const rootGraph = () => app.rootGraph ?? app.graph;
 const workflowId = () => String(rootGraph()?.id ?? "");

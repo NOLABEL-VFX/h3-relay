@@ -351,12 +351,12 @@
   "start": {
     "class_type": "StartLoop",
     "inputs": {
-      "mode": "List",
-      "mode.list": [
+      "mode": "simple",
+      "mode.num_iterations": [
         "plan",
-        0
+        2
       ],
-      "cache_iterations": true
+      "cache_iterations": false
     },
     "_meta": {
       "title": "Native loop \u00b7 one H3 window"
@@ -370,14 +370,20 @@
         0
       ],
       "window": [
-        "start",
+        "plan",
         3
+      ],
+      "iteration_index": [
+        "start",
+        0
       ],
       "previous": [
         "start",
         4
       ],
       "reference_history": true,
+      "fps": 24.0,
+      "resize_anchor": true,
       "history_audio_mode": "source",
       "source_audio": [
         "prepare",
@@ -658,8 +664,8 @@
         0
       ],
       "window": [
-        "start",
-        3
+        "window",
+        12
       ],
       "previous": [
         "start",
@@ -733,7 +739,9 @@
       ],
       "filename_prefix": "h3-relay/character-swap",
       "format": "mp4",
-      "codec": "h264"
+      "format.codec": "h264",
+      "format.codec.encoding": "re-encode",
+      "format.codec.encoding.crf": 16
     },
     "_meta": {
       "title": "SaveVideo"

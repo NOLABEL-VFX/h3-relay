@@ -251,11 +251,24 @@
       "title": "SAM3_TrackToMask"
     }
   },
+  "binary_mask": {
+    "class_type": "ThresholdMask",
+    "inputs": {
+      "mask": [
+        "mask",
+        0
+      ],
+      "value": 0.5
+    },
+    "_meta": {
+      "title": "ThresholdMask"
+    }
+  },
   "grow_mask": {
     "class_type": "GrowMask",
     "inputs": {
       "mask": [
-        "mask",
+        "binary_mask",
         0
       ],
       "expand": 5,
@@ -309,12 +322,16 @@
   "start": {
     "class_type": "StartLoop",
     "inputs": {
-      "mode": "List",
-      "mode.list": [
-        "plan",
-        0
+      "mode": "simple",
+      "mode.num_iterations": [
+        "review",
+        2
       ],
-      "cache_iterations": true
+      "cache_iterations": false,
+      "initial_iteration_value": [
+        "review",
+        1
+      ]
     },
     "_meta": {
       "title": "Native loop \u00b7 one H3 window"
@@ -324,18 +341,27 @@
     "class_type": "H3RelayWindowInputs",
     "inputs": {
       "source": [
-        "green_guide",
-        0
+        "review",
+        4
       ],
       "window": [
-        "start",
+        "review",
         3
+      ],
+      "iteration_index": [
+        "start",
+        0
       ],
       "previous": [
         "start",
         4
       ],
       "reference_history": false,
+      "fps": [
+        "components",
+        2
+      ],
+      "resize_anchor": false,
       "history_audio_mode": "generated",
       "anchor": [
         "anchor",
@@ -564,8 +590,8 @@
         0
       ],
       "window": [
-        "start",
-        3
+        "window",
+        12
       ],
       "previous": [
         "start",
@@ -635,10 +661,33 @@
       ],
       "filename_prefix": "h3-relay/person-removal",
       "format": "mp4",
-      "codec": "h264"
+      "format.codec": "h264",
+      "format.codec.encoding": "re-encode",
+      "format.codec.encoding.crf": 16
     },
     "_meta": {
       "title": "SaveVideo"
+    }
+  },
+  "review": {
+    "class_type": "H3RelayReviewWindows",
+    "inputs": {
+      "windows": [
+        "plan",
+        0
+      ],
+      "source": [
+        "green_guide",
+        0
+      ],
+      "anchor": [
+        "anchor",
+        0
+      ],
+      "window_controls": "{}"
+    },
+    "_meta": {
+      "title": "H3RelayReviewWindows"
     }
   },
   "decode_audio": {

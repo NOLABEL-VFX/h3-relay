@@ -50,19 +50,21 @@ def sam(graph, frames, count, removal=False):
             source_frames=count, expansion_px=64)
         graph["mask_preview"] = node("PreviewImage", images=["expand_mask", 1])
         return ["expand_mask", 0]
-    graph["grow_mask"] = node("GrowMask", mask=["mask", 0], expand=5, tapered_corners=False)
+    graph["binary_mask"] = node("ThresholdMask", mask=["mask", 0], value=.5)
+    graph["grow_mask"] = node("GrowMask", mask=["binary_mask", 0], expand=5, tapered_corners=False)
     return ["grow_mask", 0]
 
 
-def loop(graph, frames, count, audio=None, removal=False, use_anchor=False, use_mask=True, audio_guide=True):
+def loop(graph, frames, count, audio=None, removal=False, use_anchor=False, use_mask=True, audio_guide=True, fps=24.):
     graph["plan"] = node("H3RelayWindowPlan", "Plan source-aligned windows", source_frames=count,
         window_frames="22" if removal else "124", history_frames="18", seed=904234 if removal else 904239,
         schedule="removal_v1" if removal else "adaptive", seed_mode="increment" if removal else "fixed",
         seed_overrides="{}")
-    graph["start"] = node("StartLoop", "Native loop · one H3 window", mode="List",
-                         **{"mode.list": ["plan", 0]}, cache_iterations=True)
-    inputs = dict(source=frames, window=["start", 3], previous=["start", 4],
-                  reference_history=not removal, history_audio_mode="generated" if removal else "source" if audio_guide else "none")
+    graph["start"] = node("StartLoop", "Native loop · one H3 window", mode="simple",
+                         **{"mode.num_iterations": ["plan", 2]}, cache_iterations=False)
+    inputs = dict(source=frames, window=["plan", 3], iteration_index=["start", 0], previous=["start", 4],
+                  reference_history=not removal, fps=fps, resize_anchor=not removal,
+                  history_audio_mode="generated" if removal else "source" if audio_guide else "none")
     if audio is not None:
         inputs["source_audio"] = audio
     if use_anchor or removal:
@@ -112,14 +114,20 @@ def loop(graph, frames, count, audio=None, removal=False, use_anchor=False, use_
             sampler=["sampler", 0], sigmas=["schedule", 0], latent_image=latent),
         "separate": node("LTXVSeparateAVLatent", av_latent=["sample", 0]),
         "decode": node("VAEDecode", samples=["separate", 0], vae=["video_vae", 0]),
-        "append": node("H3RelayAppendWindow", frames=["decode", 0], window=["start", 3], previous=["start", 4]),
+        "append": node("H3RelayAppendWindow", frames=["decode", 0], window=["window", 12], previous=["start", 4]),
         "end": node("EndLoop", output_value=["append", 0], next_iteration_value=["append", 0], accumulate=False),
         "finish": node("H3RelayFinishWindows", state=["end", 0], audio_mode="none" if removal else "source"),
         "video": node("CreateVideo", images=["finish", 0], fps=["finish", 2]),
         "save": node("SaveVideo", video=["video", 0], filename_prefix="h3-relay/person-removal" if removal else "h3-relay/character-swap",
-                     format="mp4", codec="h264"),
+                     format="mp4", **{"format.codec": "h264", "format.codec.encoding": "re-encode", "format.codec.encoding.crf": 16}),
     })
     if removal:
+        graph["review"] = node("H3RelayReviewWindows", windows=["plan", 0], source=frames,
+                               anchor=["anchor", 0], window_controls="{}")
+        graph["start"]["inputs"]["mode.num_iterations"] = ["review", 2]
+        graph["start"]["inputs"]["initial_iteration_value"] = ["review", 1]
+        graph["window"]["inputs"]["window"] = ["review", 3]
+        graph["window"]["inputs"]["source"] = ["review", 4]
         graph["decode_audio"] = node("VAEDecodeAudio", samples=["separate", 1], vae=["audio_vae", 0])
         graph["append"]["inputs"]["audio"] = ["decode_audio", 0]
     else:
@@ -160,5 +168,5 @@ def person_removal_graph():
     mask = sam(graph, ["components", 0], ["dimensions", 2], removal=True)
     graph["green_guide"] = node("ImageCompositeMasked", destination=["components", 0], source=["green", 0],
                                  mask=mask, x=0, y=0, resize_source=False)
-    loop(graph, ["green_guide", 0], ["dimensions", 2], removal=True)
+    loop(graph, ["green_guide", 0], ["dimensions", 2], removal=True, fps=["components", 2])
     return graph

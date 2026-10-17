@@ -15,13 +15,14 @@ SUPPORTED = frozenset({
     "CheckpointLoaderSimple", "UNETLoader", "CLIPLoader", "DualCLIPLoader",
     "CLIPTextEncode", "SAM3_Detect", "SAM3_VideoTrack", "SAM3_TrackToMask",
     "ImageToMask", "MaskToImage", "InvertMask", "GrowMask", "SolidMask",
+    "ThresholdMask", "EmptyImage", "ImageCompositeMasked", "GetImageSize",
 })
 MODEL_FIELDS = {"ckpt_name": "checkpoints", "unet_name": "diffusion_models",
                 "clip_name": "text_encoders", "clip_name1": "text_encoders",
                 "clip_name2": "text_encoders"}
 
 
-def signature(execution_prompt, node_id, expand_pixels):
+def signature(execution_prompt, node_id, expand_pixels, input_names=None):
     """Use upstream settings and real source bytes, before resolving tensors."""
     import folder_paths
     graph = execution_prompt or {}
@@ -63,9 +64,12 @@ def signature(execution_prompt, node_id, expand_pixels):
         data = {"version": VERSION, "expand_pixels": int(expand_pixels),
                 "images": ancestry(own["inputs"].get("images")),
                 "mask": ancestry(own["inputs"].get("mask"))}
+        if input_names is not None:
+            data = {"version": VERSION, "inputs": {
+                key: ancestry(own["inputs"].get(key)) for key in input_names}}
         # Literal IMAGE/MASK inputs are not a verifiable persisted graph.
         if not all(removal_cache.is_graph_link(own["inputs"].get(k), graph)
-                   for k in ("images", "mask")):
+                   for k in (input_names if input_names is not None else ("images", "mask"))):
             return None
         return hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     except (LookupError, OSError, TypeError):

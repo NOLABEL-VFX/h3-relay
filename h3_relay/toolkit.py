@@ -12,8 +12,7 @@ import torch
 import torch.nn.functional as F
 
 from .video_prep import LabsH3PrepareVideo
-from .windowed_edit import HISTORY, WINDOWS, plan_windows, validate_settings
-from .person_remover import window_starts
+from .planning import HISTORY, WINDOWS, plan_windows, validate_settings, window_starts, plan_segment
 
 LOG = logging.getLogger(__name__)
 CONTRACT = "h3-relay-window-v2"
@@ -41,21 +40,6 @@ def slice_audio(audio, start, end, pad=True):
     return {"sample_rate": rate, "waveform": wave}
 
 
-def plan_segment(source_frames, history_frames=0):
-    """An explicit app segment whose source includes its supplied history."""
-    if type(source_frames) is not int or type(history_frames) is not int or history_frames not in HISTORY:
-        raise ValueError("Invalid segment frame counts")
-    target = source_frames-history_frames
-    needed = target+bool(history_frames)
-    sizes = [v for v in WINDOWS if v >= needed and v > history_frames]
-    if target < 1 or not sizes:
-        raise ValueError("The explicit segment must fit a single diffusion pass")
-    h, size = history_frames, sizes[0]
-    return [{"index": 0, "source_start": h-1 if h else 0,
-             "source_end_exclusive": source_frames, "window_frames": size,
-             "padded_tail_frames": size-needed, "history_frames": h,
-             "history_start": 0 if h else None, "history_end_exclusive": h if h else None,
-             "discarded_overlap": int(bool(h)), "delivered_frames": target}]
 
 
 def pool_edit_mask(mask, latent_shape):
@@ -108,9 +92,9 @@ class H3RelayWindowPlan:
             "seed_mode": (["fixed", "increment"], {"default": "fixed"}),
         }, "optional": {"seed_overrides": ("STRING", {"default": "{}"}),
                          "initial_history": ("IMAGE",)}}
-    RETURN_TYPES = ("H3_RELAY_WINDOW", "STRING")
-    RETURN_NAMES = ("windows", "timeline")
-    OUTPUT_IS_LIST = (True, False)
+    RETURN_TYPES = ("H3_RELAY_WINDOW", "STRING", "INT", "H3_RELAY_WINDOWS")
+    RETURN_NAMES = ("window_list", "timeline", "count", "windows")
+    OUTPUT_IS_LIST = (True, False, False, False)
     FUNCTION = "plan"
     CATEGORY = "H3 Relay/timeline"
 
@@ -147,28 +131,34 @@ class H3RelayWindowPlan:
                 raise ValueError("Window seed must be an unsigned 64-bit integer")
             entry.update(contract=CONTRACT, source_frames=source_frames, seed=value,
                          initial_history_frames=initial, schedule=schedule)
-        return entries, json.dumps({"contract": CONTRACT, "fps": 24, "windows": entries}, indent=2)
+        return entries, json.dumps({"contract": CONTRACT, "fps": 24, "windows": entries}, indent=2), len(entries), {"windows": entries}
 
 
 class H3RelayWindowInputs:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {"source": ("IMAGE",), "window": ("H3_RELAY_WINDOW",),
+        return {"required": {"source": ("IMAGE",), "window": ("H3_RELAY_WINDOWS",),
             "reference_history": ("BOOLEAN", {"default": True}),
+            "fps": ("FLOAT", {"default": 24.}),
             "history_audio_mode": (["source", "generated", "none"], {"default": "source"})},
             "optional": {"previous": ("H3_RELAY_WINDOW_STATE",), "source_audio": ("AUDIO",),
                 "mask": ("MASK",), "anchor": ("IMAGE",), "initial_history": ("IMAGE",),
-                "initial_history_audio": ("AUDIO",)}}
-    RETURN_TYPES = ("IMAGE", "MASK", "AUDIO", "IMAGE", "AUDIO", "IMAGE", "AUDIO", "INT", "INT", "INT", "INT", "IMAGE")
+                "initial_history_audio": ("AUDIO",), "iteration_index": ("INT", {"default": 0, "min": 0}),
+                "resize_anchor": ("BOOLEAN", {"default": True})}}
+    RETURN_TYPES = ("IMAGE", "MASK", "AUDIO", "IMAGE", "AUDIO", "IMAGE", "AUDIO", "INT", "INT", "INT", "INT", "IMAGE", "H3_RELAY_WINDOW")
     RETURN_NAMES = ("source_window", "edit_mask", "target_audio", "history", "history_audio",
                     "reference_video", "reference_audio", "history_frames", "conditioning_length",
-                    "target_frames", "seed", "anchor")
+                    "target_frames", "seed", "anchor", "window")
     FUNCTION = "select"
     CATEGORY = "H3 Relay/timeline"
 
     def select(self, source, window, reference_history=True, history_audio_mode="source",
                previous=None, source_audio=None, mask=None, anchor=None, initial_history=None,
-               initial_history_audio=None):
+               initial_history_audio=None, fps=24., iteration_index=0, resize_anchor=True):
+        if "windows" in window:
+            window = window["windows"][iteration_index]
+        if abs(fps-24.) > .001:
+            raise ValueError("H3 windows require a 24 fps source; resample before masking")
         if window.get("contract") != CONTRACT:
             raise ValueError("Unsupported H3 window contract")
         start, size, hist = (window[k] for k in ("source_start", "window_frames", "history_frames"))
@@ -182,6 +172,8 @@ class H3RelayWindowInputs:
         if anchor is None:
             anchor = source[:1]
         else:
+            if not resize_anchor and anchor.shape[1:] != source.shape[1:]:
+                raise ValueError("Anchor must match the source resolution and framing")
             import comfy.utils
             anchor = comfy.utils.common_upscale(anchor[:1].movedim(-1, 1), source.shape[2], source.shape[1],
                                                 "lanczos", "disabled").movedim(1, -1)
@@ -206,7 +198,7 @@ class H3RelayWindowInputs:
         return (pad_frames(source[start:end], size), edit_mask, slice_audio(source_audio, start, start+size),
                 prior, prior_audio, pad_frames(source[begin:end], size+past),
                 slice_audio(source_audio, begin, start+size), hist, size+max(0, hist-1),
-                size, window["seed"], anchor)
+                size, window["seed"], anchor, window)
 
 
 class H3RelayApplyHistory:
@@ -294,6 +286,18 @@ class H3RelayAppendWindow:
             frames = torch.cat((frames, frames[-1:]))
         if len(frames) != size:
             raise ValueError(f"Expected {size} decoded frames, received {len(frames)}")
+        checkpoint = window.get("checkpoint")
+        record = None
+        if checkpoint:
+            from . import removal_cache, removal_previews
+            if audio is None:
+                raise ValueError("Checkpointed windows require decoded audio for reproducible continuation")
+            record = removal_cache.save(checkpoint["scope"], checkpoint["config_key"], window["index"],
+                start, size, window["source_frames"], window["seed"],
+                previous.get("records", []) if previous else [], frames, audio,
+                window_metadata=checkpoint["window_metadata"])
+            removal_previews.publish_window(checkpoint["run_id"], window["index"], frames,
+                                            start, overlap, record=record)
         frames = frames[overlap:end-start].cpu()
         if prefix is not None:
             frames = torch.cat((prefix.cpu(), frames))
@@ -316,7 +320,8 @@ class H3RelayAppendWindow:
         records = previous["windows"] if previous is not None else []
         return ({"contract": CONTRACT, "frames": frames, "audio": assembled_audio,
                  "windows": [*records, window], "source_frames": window["source_frames"],
-                 "initial_history_frames": window["initial_history_frames"]},)
+                 "initial_history_frames": window["initial_history_frames"],
+                 "records": [*(previous.get("records", []) if previous else []), *([record["record_id"]] if record else [])]},)
 
 
 class H3RelayFinishWindows:
@@ -341,7 +346,8 @@ class H3RelayFinishWindows:
                   "delivered_frames": len(frames), "history_frames": history,
                   "audio_mode": audio_mode, "body_composited": False, "complete": True,
                   "windows": state["windows"]}
-        return frames, audio, 24., json.dumps(report, indent=2)
+        return {"result": (frames, audio, 24., json.dumps(report, indent=2)),
+                "ui": {"h3_relay_report": [report]}}
 
 
 NODE_CLASS_MAPPINGS = {cls.__name__: cls for cls in (H3RelayPrepareSource, H3RelayWindowPlan,
