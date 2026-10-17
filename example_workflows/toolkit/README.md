@@ -9,6 +9,15 @@ and reloaded through the actual frontend, with their inputs and links checked.
 | Character Swap V1.5 | [Open](H3-Character-Swap.json) | [API](H3-Character-Swap.api.json) |
 | Person Removal V1 | [Open](H3-Person-Removal.json) | [API](H3-Person-Removal.api.json) |
 
+## Canvas guide
+
+Both canvases use numbered, colored groups for inputs, models, SAM masks,
+window planning, conditioning, sampling and output. The left-hand notes include
+clickable model downloads, a ComfyUI folder tree, setup instructions, resolution
+references and window/history guidance. Green nodes are inputs, blue nodes are
+Relay helpers and red nodes save output. The automatic resolution guide follows
+Prepare Source's strict pixel caps; the manual size table is separate.
+
 ## Runtime and models
 
 Install H3 Relay in the ComfyUI environment running the graph. No separate
