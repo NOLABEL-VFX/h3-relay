@@ -1,6 +1,6 @@
 # Reusable H3 toolkit migration
 
-Status: implementation branch; not a release or GPU-equivalence claim.
+Status: H3 Relay 2.0.0 release candidate. Local CPU, GPU and browser qualification completed on 2026-10-17; remote publication and CI remain pending.
 
 The new workflows use native ComfyUI Start Loop / End Loop. Model loaders,
 reference conditioning, target guides, noise, sampler, scheduler, VAE encode /
@@ -62,7 +62,8 @@ Both downloadable canvas graphs must pass exact input/connection round trips.
 - App source audio, raw decoded output, H-1 source/video reference alignment,
   model provenance and explicit segment history must remain unchanged.
 - Person Remover's lock/reroll/recovery contract uses Review Windows. Native
-  iteration caching alone is not durable recovery; GPU/UI validation is pending.
+  iteration caching alone is not durable recovery. A real browser reroll after
+  a server restart retained the exact first window and regenerated the second.
 - The stock reference encoder replaces the copied encoder. A scoped CLIP policy,
   H3RelayTextMemory, releases inactive VAEs before native Qwen encoding and
   releases Qwen afterward. The matched 24 GB test exhausted memory without
@@ -82,10 +83,10 @@ Both downloadable canvas graphs must pass exact input/connection round trips.
 - Update and test the app recipe, allowed node list, graph inputs and output
   adapter together. Install the canonical Relay revision; do not retain a
   second fork of its implementation in the app.
-- Versioning, Registry status and publication remain
-  pending until these gates pass.
+- Version 2.0.0 marks the new timeline/recipe contract. Legacy identifiers remain
+  registered. Remote CI and Registry publication are separate release checks.
 
-Initial evidence: 94 CPU tests and the legacy expanded runtime contract pass.
+CPU evidence: 96 tests and the legacy expanded runtime contract pass.
 An actual ComfyUI PromptExecutor run using native loops preserved 44 source
 frames and 440 test audio samples across three windows. A fresh executor restored
 two exact checkpoints and evaluated only the third window, invalidated the full
@@ -95,3 +96,48 @@ the legacy green mask exactly. A 16-bit FFV1 round trip preserves every encoded
 sample. These are CPU mechanics checks, not generated-output acceptance.
 
 The package minimum is ComfyUI 0.37.0, which already includes the native loop and video-saving schemas used here. The exact pinned commit above remains the qualified target; its H3 audio resampling implementation differs from the release tag.
+
+## Matched GPU qualification — 2026-10-17
+
+Both variants used identical sources, reference images, masks, prompts, seeds,
+model hashes and sampling settings on the same RTX 4090 for each pair. The
+qualified core/frontend are pinned above; PyTorch was 2.11.0 + CUDA 12.8 and
+comfy-kitchen 0.2.35. CPU, RAM and swap were unrestricted, reserve VRAM was zero,
+and optimized kernels remained enabled. Full residency exhausted the physical
+24 GB capacity, so both sides used normal offloading without changing generation
+settings. Failed full-residency runs were retained.
+
+| Comparison | Delivered frames | Pixel-identical frames | Mean absolute difference / 255 | Source audio |
+| --- | ---: | ---: | ---: | --- |
+| Character Swap V1.5, single window | 120 | 120 | 0.000000 | Exact decoded samples |
+| Character Swap V1, single window | 120 | 120 | 0.000000 | Exact decoded samples |
+| Character Swap, two windows | 43 | 22 | 1.482121 | Exact decoded samples |
+| Person Removal, two windows | 43 | 0 | 0.827001 | Silent export |
+
+The V1 fixture deliberately retains a known identity-reversion failure. The
+recommended V1.5 case retains the illustrated character through all sampled
+frames and matches the legacy result exactly. Continuation results were visually
+close, with small face/pose and background differences; numerical equivalence
+is not claimed. These few fixtures do not establish quality for every input.
+
+A full 43-frame Person Removal run exercised native SAM detection, tracking,
+thresholding, mask growth and green compositing. After saving the workflow and
+restarting ComfyUI, the actual Reroll button regenerated window two with a changed
+seed while preserving window one's record and decoded-frame hashes. Prepared
+source recovery avoided another SAM tracking pass. Browser previews were
+playable with no page errors. Both final canvas workflows passed frontend
+export/reload input and connection checks.
+
+The app 0.2.0 candidate installs the canonical Relay archive at
+`fd9502a516d8fd7521e991b8dfe2a590bb7f0fa6`. Its real worker completed SAM masks,
+a whole-shot render, two independent segment jobs and automatic assembly. The
+18-frame history input exactly matched the preceding 16-bit RGB FFV1 master;
+the assembled master exactly matched the concatenated 22 + 21 decoded frames.
+The 43-frame, 24 fps download matched the stored video byte-for-byte and played
+in the browser. AAC source-audio correlation at zero lag was 0.999972; codec
+tail padding was 10 samples at 32 kHz. App checks: 313 Python tests, 11 Node
+runtime checks, TypeScript/Vite builds and reproducible shared-package rebuilds.
+
+All original inputs, prompts, model identities, failed/successful run receipts,
+per-frame metrics and browser evidence are retained in the private qualification
+bundle. No model weights or test footage are included in this source release.
