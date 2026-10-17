@@ -105,7 +105,7 @@ class ReleaseMetadataTest(unittest.TestCase):
     def test_registry_identity(self):
         metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
         self.assertEqual(metadata["project"]["name"], "h3-relay")
-        self.assertEqual(metadata["project"]["version"], "1.0.3")
+        self.assertEqual(metadata["project"]["version"], "2.0.0")
         self.assertEqual(metadata["tool"]["comfy"]["PublisherId"], "akatz")
         self.assertEqual(
             metadata["tool"]["comfy"]["Icon"],

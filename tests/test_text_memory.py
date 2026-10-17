@@ -24,7 +24,7 @@ class TextMemoryTests(unittest.TestCase):
         def fail(): raise ValueError("sampler failure")
         with self.assertRaisesRegex(ValueError, "sampler failure"): result.wrapper(fail)
         self.assertIs(base.memory_required, native)
-        self.assertEqual(releases, [True])
+        self.assertEqual(releases, [True, True, True])
 
     def test_native_result_and_failure_both_release_without_modifying_input(self):
         events = []

@@ -5,6 +5,32 @@ It separates native H3 generation from optional H3 Ultimate or LTX 2.5
 enhancement and built-in frame interpolation so creators can approve a shot
 before paying for finishing work.
 
+## Native ComfyUI workflows
+
+The reusable toolkit exposes source preparation, window planning, history,
+mask conversion, assembly and durable review as separate nodes. ComfyUI's
+own nodes handle model loading, reference conditioning, guides, sampling,
+VAE encoding/decoding, loops and ordinary video saving.
+
+- [Character Swap](example_workflows/toolkit/H3-Character-Swap.json) defaults
+  to the V1.5 character LoRA with the FL2V Turbo 8-step adapter.
+- [Person Removal](example_workflows/toolkit/H3-Person-Removal.json) uses the
+  Person Remover V1 LoRA, a clean first frame, native SAM tracking and durable
+  window rerolls.
+- [Setup, model paths and usage](example_workflows/toolkit/README.md).
+- [Node contracts and migration](docs/toolkit-v2.md).
+
+These graphs require ComfyUI 0.37.0 or later. The qualified target is commit
+`79be670e2d9be63e238785af307369d2b9039ed1`, frontend `1.53.6`, Linux and an
+RTX 4090. Small residency-policy nodes keep the native encoder/sampler usable
+on the tested 24 GB GPU. They preserve explicit high-VRAM mode; the tested
+workflows required normal offloading after measured full-residency failures.
+Legacy Relay node identifiers remain available. The app now installs this
+canonical package instead of its former `H3CharacterSwap*` implementation.
+
+The following sections describe the existing shot-generation and experimental
+FastH3 workflows, whose validation is separate from the toolkit recipes.
+
 > **Experimental FastH3 / H3 Ultimate support:** validated on an RTX 4090
 > running Linux with the official `comfy-kitchen==0.2.33` wheel and the
 > VSA-capable ComfyUI commit pinned in the

@@ -1,8 +1,8 @@
 {
-  "id": "fb6fe9cf-32db-463c-bcb1-1ce33ca1b26a",
+  "id": "52a1be83-b877-445c-ac9f-c1d23ba800fe",
   "revision": 0,
   "last_node_id": 5,
-  "last_link_id": 234,
+  "last_link_id": 243,
   "nodes": [
     {
       "id": "model",
@@ -35,7 +35,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            157
+            163
           ]
         }
       ],
@@ -82,7 +82,7 @@
           "shape": null,
           "type": "MODEL",
           "pos": null,
-          "link": 157
+          "link": 163
         }
       ],
       "outputs": [
@@ -100,7 +100,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            158
+            164
           ]
         }
       ],
@@ -147,7 +147,7 @@
           "shape": null,
           "type": "MODEL",
           "pos": null,
-          "link": 158
+          "link": 164
         }
       ],
       "outputs": [
@@ -165,7 +165,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            161
+            167
           ]
         }
       ],
@@ -213,7 +213,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            159
+            165
           ]
         }
       ],
@@ -262,7 +262,7 @@
           "shape": null,
           "type": "CLIP",
           "pos": null,
-          "link": 159
+          "link": 165
         }
       ],
       "outputs": [
@@ -280,7 +280,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            160
+            166
           ]
         }
       ],
@@ -325,7 +325,7 @@
           "shape": null,
           "type": "CLIP",
           "pos": null,
-          "link": 160
+          "link": 166
         }
       ],
       "outputs": [
@@ -343,7 +343,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            190
+            196
           ]
         }
       ],
@@ -385,9 +385,9 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            198,
-            205,
-            219
+            204,
+            211,
+            228
           ]
         }
       ],
@@ -435,8 +435,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            199,
-            234
+            205,
+            243
           ]
         }
       ],
@@ -481,7 +481,7 @@
           "shape": null,
           "type": "MODEL",
           "pos": null,
-          "link": 161
+          "link": 167
         }
       ],
       "outputs": [
@@ -499,8 +499,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            208,
-            211
+            213,
+            220
           ]
         }
       ],
@@ -550,7 +550,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            162
+            168
           ]
         }
       ],
@@ -597,7 +597,7 @@
           "shape": null,
           "type": "VIDEO",
           "pos": null,
-          "link": 162
+          "link": 168
         }
       ],
       "outputs": [
@@ -615,10 +615,10 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            163,
-            167,
-            172,
-            178
+            169,
+            173,
+            178,
+            184
           ]
         },
         {
@@ -650,7 +650,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            188
+            194
           ]
         },
         {
@@ -719,7 +719,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 163
+          "link": 169
         }
       ],
       "outputs": [
@@ -737,8 +737,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            164,
-            191
+            170,
+            197
           ]
         },
         {
@@ -755,8 +755,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            165,
-            192
+            171,
+            198
           ]
         },
         {
@@ -773,7 +773,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            181
+            187
           ]
         }
       ],
@@ -815,8 +815,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            189,
-            232
+            195,
+            241
           ]
         },
         {
@@ -880,7 +880,7 @@
           "widget": {
             "name": "width"
           },
-          "link": 164
+          "link": 170
         },
         {
           "color_off": null,
@@ -896,7 +896,7 @@
           "widget": {
             "name": "height"
           },
-          "link": 165
+          "link": 171
         }
       ],
       "outputs": [
@@ -914,7 +914,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            179
+            185
           ]
         }
       ],
@@ -968,8 +968,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            168,
-            171
+            174,
+            177
           ]
         },
         {
@@ -986,7 +986,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            166
+            172
           ]
         },
         {
@@ -1046,7 +1046,7 @@
           "shape": null,
           "type": "CLIP",
           "pos": null,
-          "link": 166
+          "link": 172
         }
       ],
       "outputs": [
@@ -1064,8 +1064,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            170,
-            174
+            176,
+            180
           ]
         }
       ],
@@ -1110,7 +1110,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 167
+          "link": 173
         }
       ],
       "outputs": [
@@ -1128,7 +1128,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            169
+            175
           ]
         }
       ],
@@ -1175,7 +1175,7 @@
           "shape": null,
           "type": "MODEL",
           "pos": null,
-          "link": 168
+          "link": 174
         },
         {
           "color_off": null,
@@ -1189,7 +1189,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 169
+          "link": 175
         },
         {
           "color_off": null,
@@ -1203,7 +1203,7 @@
           "shape": 7,
           "type": "CONDITIONING",
           "pos": null,
-          "link": 170
+          "link": 176
         },
         {
           "color_off": null,
@@ -1263,7 +1263,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            173
+            179
           ]
         },
         {
@@ -1327,7 +1327,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 172
+          "link": 178
         },
         {
           "color_off": null,
@@ -1341,7 +1341,7 @@
           "shape": null,
           "type": "MODEL",
           "pos": null,
-          "link": 171
+          "link": 177
         },
         {
           "color_off": null,
@@ -1355,7 +1355,7 @@
           "shape": 7,
           "type": "MASK",
           "pos": null,
-          "link": 173
+          "link": 179
         },
         {
           "color_off": null,
@@ -1369,7 +1369,7 @@
           "shape": 7,
           "type": "CONDITIONING",
           "pos": null,
-          "link": 174
+          "link": 180
         }
       ],
       "outputs": [
@@ -1387,7 +1387,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            175
+            181
           ]
         }
       ],
@@ -1436,7 +1436,7 @@
           "shape": null,
           "type": "SAM3_TRACK_DATA",
           "pos": null,
-          "link": 175
+          "link": 181
         }
       ],
       "outputs": [
@@ -1454,7 +1454,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            176
+            182
           ]
         }
       ],
@@ -1499,7 +1499,7 @@
           "shape": null,
           "type": "MASK",
           "pos": null,
-          "link": 176
+          "link": 182
         }
       ],
       "outputs": [
@@ -1517,7 +1517,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            177
+            183
           ]
         }
       ],
@@ -1562,7 +1562,7 @@
           "shape": null,
           "type": "MASK",
           "pos": null,
-          "link": 177
+          "link": 183
         }
       ],
       "outputs": [
@@ -1580,7 +1580,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            180
+            186
           ]
         }
       ],
@@ -1627,7 +1627,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 178
+          "link": 184
         },
         {
           "color_off": null,
@@ -1641,7 +1641,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 179
+          "link": 185
         },
         {
           "color_off": null,
@@ -1655,7 +1655,7 @@
           "shape": 7,
           "type": "MASK",
           "pos": null,
-          "link": 180
+          "link": 186
         }
       ],
       "outputs": [
@@ -1673,7 +1673,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            231
+            240
           ]
         }
       ],
@@ -1738,7 +1738,7 @@
           "widget": {
             "name": "source_frames"
           },
-          "link": 181
+          "link": 187
         }
       ],
       "outputs": [
@@ -1756,7 +1756,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            230
+            239
           ]
         },
         {
@@ -1874,7 +1874,7 @@
           "shape": 7,
           "type": "*",
           "pos": null,
-          "link": 183
+          "link": 189
         },
         {
           "color_off": null,
@@ -1890,7 +1890,7 @@
           "widget": {
             "name": "mode.num_iterations"
           },
-          "link": 182
+          "link": 188
         }
       ],
       "outputs": [
@@ -1908,7 +1908,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            186
+            192
           ]
         },
         {
@@ -1970,8 +1970,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            187,
-            222
+            193,
+            231
           ]
         }
       ],
@@ -2020,7 +2020,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 184
+          "link": 190
         },
         {
           "color_off": null,
@@ -2034,7 +2034,7 @@
           "shape": null,
           "type": "H3_RELAY_WINDOWS",
           "pos": null,
-          "link": 185
+          "link": 191
         },
         {
           "color_off": null,
@@ -2048,7 +2048,7 @@
           "shape": 7,
           "type": "H3_RELAY_WINDOW_STATE",
           "pos": null,
-          "link": 187
+          "link": 193
         },
         {
           "color_off": null,
@@ -2090,7 +2090,7 @@
           "shape": 7,
           "type": "IMAGE",
           "pos": null,
-          "link": 189
+          "link": 195
         },
         {
           "color_off": null,
@@ -2134,7 +2134,7 @@
           "widget": {
             "name": "fps"
           },
-          "link": 188
+          "link": 194
         },
         {
           "color_off": null,
@@ -2150,7 +2150,7 @@
           "widget": {
             "name": "iteration_index"
           },
-          "link": 186
+          "link": 192
         }
       ],
       "outputs": [
@@ -2168,7 +2168,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            206
+            212
           ]
         },
         {
@@ -2215,7 +2215,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            200
+            206
           ]
         },
         {
@@ -2232,7 +2232,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            202
+            208
           ]
         },
         {
@@ -2249,7 +2249,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            194
+            200
           ]
         },
         {
@@ -2281,7 +2281,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            201
+            207
           ]
         },
         {
@@ -2298,7 +2298,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            193
+            199
           ]
         },
         {
@@ -2330,7 +2330,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            207
+            216
           ]
         },
         {
@@ -2347,7 +2347,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            195
+            201
           ]
         },
         {
@@ -2364,7 +2364,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            221
+            230
           ]
         }
       ],
@@ -2417,7 +2417,7 @@
           "shape": null,
           "type": "CLIP",
           "pos": null,
-          "link": 190
+          "link": 196
         },
         {
           "color_off": null,
@@ -2459,7 +2459,7 @@
           "shape": 7,
           "type": "IMAGE",
           "pos": null,
-          "link": 195
+          "link": 201
         },
         {
           "color_off": null,
@@ -2501,7 +2501,7 @@
           "shape": 7,
           "type": "IMAGE",
           "pos": null,
-          "link": 194
+          "link": 200
         },
         {
           "color_off": null,
@@ -2587,7 +2587,7 @@
           "widget": {
             "name": "width"
           },
-          "link": 191
+          "link": 197
         },
         {
           "color_off": null,
@@ -2603,7 +2603,7 @@
           "widget": {
             "name": "height"
           },
-          "link": 192
+          "link": 198
         },
         {
           "color_off": null,
@@ -2619,7 +2619,7 @@
           "widget": {
             "name": "length"
           },
-          "link": 193
+          "link": 199
         }
       ],
       "outputs": [
@@ -2637,7 +2637,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            196
+            202
           ]
         },
         {
@@ -2654,7 +2654,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            197
+            203
           ]
         }
       ],
@@ -2707,7 +2707,7 @@
           "shape": null,
           "type": "CONDITIONING",
           "pos": null,
-          "link": 196
+          "link": 202
         },
         {
           "color_off": null,
@@ -2721,7 +2721,7 @@
           "shape": null,
           "type": "LATENT",
           "pos": null,
-          "link": 197
+          "link": 203
         },
         {
           "color_off": null,
@@ -2735,7 +2735,7 @@
           "shape": null,
           "type": "VAE",
           "pos": null,
-          "link": 198
+          "link": 204
         },
         {
           "color_off": null,
@@ -2749,7 +2749,7 @@
           "shape": null,
           "type": "VAE",
           "pos": null,
-          "link": 199
+          "link": 205
         },
         {
           "color_off": null,
@@ -2763,7 +2763,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 200
+          "link": 206
         },
         {
           "color_off": null,
@@ -2777,7 +2777,7 @@
           "shape": 7,
           "type": "AUDIO",
           "pos": null,
-          "link": 202
+          "link": 208
         },
         {
           "color_off": null,
@@ -2793,7 +2793,7 @@
           "widget": {
             "name": "history_frames"
           },
-          "link": 201
+          "link": 207
         }
       ],
       "outputs": [
@@ -2811,7 +2811,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            203
+            209
           ]
         },
         {
@@ -2828,8 +2828,9 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            204,
-            216
+            210,
+            214,
+            225
           ]
         }
       ],
@@ -2878,7 +2879,7 @@
           "shape": null,
           "type": "CONDITIONING",
           "pos": null,
-          "link": 203
+          "link": 209
         },
         {
           "color_off": null,
@@ -2892,7 +2893,7 @@
           "shape": null,
           "type": "LATENT",
           "pos": null,
-          "link": 204
+          "link": 210
         },
         {
           "color_off": null,
@@ -2906,7 +2907,7 @@
           "shape": 7,
           "type": "VAE",
           "pos": null,
-          "link": 205
+          "link": 211
         },
         {
           "color_off": null,
@@ -2934,7 +2935,7 @@
           "shape": 7,
           "type": "IMAGE",
           "pos": null,
-          "link": 206
+          "link": 212
         },
         {
           "color_off": null,
@@ -2966,8 +2967,9 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            209,
-            210
+            215,
+            218,
+            219
           ]
         }
       ],
@@ -2980,6 +2982,97 @@
       ],
       "widgets_values_named": {
         "frame_idx": 0
+      },
+      "color": "#30353d",
+      "bgcolor": "#20252d"
+    },
+    {
+      "id": "sampling_memory",
+      "type": "H3RelaySamplingMemory",
+      "pos": [
+        4020,
+        1060
+      ],
+      "size": [
+        294,
+        98
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "showAdvanced": null,
+      "inputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "model",
+          "nameLocked": null,
+          "removable": null,
+          "shape": null,
+          "type": "MODEL",
+          "pos": null,
+          "link": 213
+        },
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "latent",
+          "nameLocked": null,
+          "removable": null,
+          "shape": null,
+          "type": "LATENT",
+          "pos": null,
+          "link": 214
+        },
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "conditioning",
+          "nameLocked": null,
+          "removable": null,
+          "shape": null,
+          "type": "CONDITIONING",
+          "pos": null,
+          "link": 215
+        }
+      ],
+      "outputs": [
+        {
+          "color_off": null,
+          "color_on": null,
+          "dir": null,
+          "label": null,
+          "locked": null,
+          "name": "MODEL",
+          "nameLocked": null,
+          "removable": null,
+          "shape": null,
+          "type": "MODEL",
+          "pos": null,
+          "slot_index": null,
+          "links": [
+            217
+          ]
+        }
+      ],
+      "title": "H3RelaySamplingMemory",
+      "properties": {
+        "Node name for S&R": "H3RelaySamplingMemory"
+      },
+      "widgets_values": [
+        4
+      ],
+      "widgets_values_named": {
+        "activation_memory_gib": 4
       },
       "color": "#30353d",
       "bgcolor": "#20252d"
@@ -3014,7 +3107,7 @@
           "widget": {
             "name": "noise_seed"
           },
-          "link": 207
+          "link": 216
         }
       ],
       "outputs": [
@@ -3032,7 +3125,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            212
+            221
           ]
         }
       ],
@@ -3062,7 +3155,7 @@
         98
       ],
       "flags": {},
-      "order": 38,
+      "order": 39,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3078,7 +3171,7 @@
           "shape": null,
           "type": "MODEL",
           "pos": null,
-          "link": 208
+          "link": 217
         },
         {
           "color_off": null,
@@ -3092,7 +3185,7 @@
           "shape": null,
           "type": "CONDITIONING",
           "pos": null,
-          "link": 209
+          "link": 218
         },
         {
           "color_off": null,
@@ -3106,7 +3199,7 @@
           "shape": null,
           "type": "CONDITIONING",
           "pos": null,
-          "link": 210
+          "link": 219
         }
       ],
       "outputs": [
@@ -3124,7 +3217,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            213
+            222
           ]
         }
       ],
@@ -3172,7 +3265,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            214
+            223
           ]
         }
       ],
@@ -3216,7 +3309,7 @@
           "shape": null,
           "type": "MODEL",
           "pos": null,
-          "link": 211
+          "link": 220
         }
       ],
       "outputs": [
@@ -3234,7 +3327,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            215
+            224
           ]
         }
       ],
@@ -3266,7 +3359,7 @@
         106
       ],
       "flags": {},
-      "order": 39,
+      "order": 40,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3282,7 +3375,7 @@
           "shape": null,
           "type": "NOISE",
           "pos": null,
-          "link": 212
+          "link": 221
         },
         {
           "color_off": null,
@@ -3296,7 +3389,7 @@
           "shape": null,
           "type": "GUIDER",
           "pos": null,
-          "link": 213
+          "link": 222
         },
         {
           "color_off": null,
@@ -3310,7 +3403,7 @@
           "shape": null,
           "type": "SAMPLER",
           "pos": null,
-          "link": 214
+          "link": 223
         },
         {
           "color_off": null,
@@ -3324,7 +3417,7 @@
           "shape": null,
           "type": "SIGMAS",
           "pos": null,
-          "link": 215
+          "link": 224
         },
         {
           "color_off": null,
@@ -3338,7 +3431,7 @@
           "shape": null,
           "type": "LATENT",
           "pos": null,
-          "link": 216
+          "link": 225
         }
       ],
       "outputs": [
@@ -3356,7 +3449,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            217
+            226
           ]
         },
         {
@@ -3393,7 +3486,7 @@
         46
       ],
       "flags": {},
-      "order": 40,
+      "order": 41,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3409,7 +3502,7 @@
           "shape": null,
           "type": "LATENT",
           "pos": null,
-          "link": 217
+          "link": 226
         }
       ],
       "outputs": [
@@ -3427,7 +3520,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            218
+            227
           ]
         },
         {
@@ -3444,7 +3537,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            233
+            242
           ]
         }
       ],
@@ -3467,7 +3560,7 @@
         46
       ],
       "flags": {},
-      "order": 41,
+      "order": 42,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3483,7 +3576,7 @@
           "shape": null,
           "type": "LATENT",
           "pos": null,
-          "link": 218
+          "link": 227
         },
         {
           "color_off": null,
@@ -3497,7 +3590,7 @@
           "shape": null,
           "type": "VAE",
           "pos": null,
-          "link": 219
+          "link": 228
         }
       ],
       "outputs": [
@@ -3515,7 +3608,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            220
+            229
           ]
         }
       ],
@@ -3538,7 +3631,7 @@
         126
       ],
       "flags": {},
-      "order": 43,
+      "order": 44,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3554,7 +3647,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 220
+          "link": 229
         },
         {
           "color_off": null,
@@ -3568,7 +3661,7 @@
           "shape": null,
           "type": "H3_RELAY_WINDOW",
           "pos": null,
-          "link": 221
+          "link": 230
         },
         {
           "color_off": null,
@@ -3582,7 +3675,7 @@
           "shape": 7,
           "type": "H3_RELAY_WINDOW_STATE",
           "pos": null,
-          "link": 222
+          "link": 231
         },
         {
           "color_off": null,
@@ -3596,7 +3689,7 @@
           "shape": 7,
           "type": "AUDIO",
           "pos": null,
-          "link": 223
+          "link": 232
         },
         {
           "color_off": null,
@@ -3642,8 +3735,8 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            224,
-            225
+            233,
+            234
           ]
         }
       ],
@@ -3666,7 +3759,7 @@
         98
       ],
       "flags": {},
-      "order": 44,
+      "order": 45,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3682,7 +3775,7 @@
           "shape": 7,
           "type": "*",
           "pos": null,
-          "link": 224
+          "link": 233
         },
         {
           "color_off": null,
@@ -3696,7 +3789,7 @@
           "shape": 7,
           "type": "*",
           "pos": null,
-          "link": 225
+          "link": 234
         },
         {
           "color_off": null,
@@ -3728,7 +3821,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            226
+            235
           ]
         }
       ],
@@ -3757,7 +3850,7 @@
         118
       ],
       "flags": {},
-      "order": 45,
+      "order": 46,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3773,7 +3866,7 @@
           "shape": null,
           "type": "H3_RELAY_WINDOW_STATE",
           "pos": null,
-          "link": 226
+          "link": 235
         },
         {
           "color_off": null,
@@ -3805,7 +3898,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            227
+            236
           ]
         },
         {
@@ -3837,7 +3930,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            228
+            237
           ]
         },
         {
@@ -3881,7 +3974,7 @@
         150
       ],
       "flags": {},
-      "order": 46,
+      "order": 47,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3897,7 +3990,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 227
+          "link": 236
         },
         {
           "color_off": null,
@@ -3927,7 +4020,7 @@
           "widget": {
             "name": "fps"
           },
-          "link": 228
+          "link": 237
         }
       ],
       "outputs": [
@@ -3945,7 +4038,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            229
+            238
           ]
         }
       ],
@@ -3980,7 +4073,7 @@
         154
       ],
       "flags": {},
-      "order": 47,
+      "order": 48,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -3996,7 +4089,7 @@
           "shape": null,
           "type": "VIDEO",
           "pos": null,
-          "link": 229
+          "link": 238
         }
       ],
       "outputs": [
@@ -4065,7 +4158,7 @@
           "shape": null,
           "type": "H3_RELAY_WINDOW",
           "pos": null,
-          "link": 230
+          "link": 239
         },
         {
           "color_off": null,
@@ -4079,7 +4172,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 231
+          "link": 240
         },
         {
           "color_off": null,
@@ -4093,7 +4186,7 @@
           "shape": null,
           "type": "IMAGE",
           "pos": null,
-          "link": 232
+          "link": 241
         }
       ],
       "outputs": [
@@ -4126,7 +4219,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            183
+            189
           ]
         },
         {
@@ -4143,7 +4236,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            182
+            188
           ]
         },
         {
@@ -4160,7 +4253,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            185
+            191
           ]
         },
         {
@@ -4177,7 +4270,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            184
+            190
           ]
         }
       ],
@@ -4206,7 +4299,7 @@
         46
       ],
       "flags": {},
-      "order": 42,
+      "order": 43,
       "mode": 0,
       "showAdvanced": null,
       "inputs": [
@@ -4222,7 +4315,7 @@
           "shape": null,
           "type": "LATENT",
           "pos": null,
-          "link": 233
+          "link": 242
         },
         {
           "color_off": null,
@@ -4236,7 +4329,7 @@
           "shape": null,
           "type": "VAE",
           "pos": null,
-          "link": 234
+          "link": 243
         }
       ],
       "outputs": [
@@ -4254,7 +4347,7 @@
           "pos": null,
           "slot_index": null,
           "links": [
-            223
+            232
           ]
         }
       ],
@@ -4313,10 +4406,10 @@
       "title": "02 \u00b7 Models",
       "properties": {},
       "widgets_values": [
-        "## 02 \u00b7 Models\n\nUse the pinned Ref2VA INT8 model, Qwen encoder and H3 video/audio VAEs. Person Remover V1 uses its own LoRA, 12 steps and the simple scheduler. Do not add the Turbo LoRA.\n\nText Stage Memory releases inactive models between VAE and Qwen encoding in normal residency mode; high-VRAM mode remains unchanged. Model files and license links are documented with the workflow. ComfyUI must support native Start Loop / End Loop. Qualified core: 79be670e2d9be63e238785af307369d2b9039ed1; frontend 1.53.6."
+        "## 02 \u00b7 Models\n\nUse the pinned Ref2VA INT8 model, Qwen encoder and H3 video/audio VAEs. Person Remover V1 uses its own LoRA, 12 steps and the simple scheduler. Do not add the Turbo LoRA.\n\nText Stage Memory releases inactive models between VAE and Qwen encoding in normal residency mode; high-VRAM mode remains unchanged. Sampling Workspace supplies the tested activation estimate and releases the diffusion model before decoding. Model files and license links: https://github.com/akatz-ai/h3-relay/tree/main/example_workflows/toolkit ComfyUI must support native Start Loop / End Loop. Qualified core: 79be670e2d9be63e238785af307369d2b9039ed1; frontend 1.53.6."
       ],
       "widgets_values_named": {
-        "text": "## 02 \u00b7 Models\n\nUse the pinned Ref2VA INT8 model, Qwen encoder and H3 video/audio VAEs. Person Remover V1 uses its own LoRA, 12 steps and the simple scheduler. Do not add the Turbo LoRA.\n\nText Stage Memory releases inactive models between VAE and Qwen encoding in normal residency mode; high-VRAM mode remains unchanged. Model files and license links are documented with the workflow. ComfyUI must support native Start Loop / End Loop. Qualified core: 79be670e2d9be63e238785af307369d2b9039ed1; frontend 1.53.6."
+        "text": "## 02 \u00b7 Models\n\nUse the pinned Ref2VA INT8 model, Qwen encoder and H3 video/audio VAEs. Person Remover V1 uses its own LoRA, 12 steps and the simple scheduler. Do not add the Turbo LoRA.\n\nText Stage Memory releases inactive models between VAE and Qwen encoding in normal residency mode; high-VRAM mode remains unchanged. Sampling Workspace supplies the tested activation estimate and releases the diffusion model before decoding. Model files and license links: https://github.com/akatz-ai/h3-relay/tree/main/example_workflows/toolkit ComfyUI must support native Start Loop / End Loop. Qualified core: 79be670e2d9be63e238785af307369d2b9039ed1; frontend 1.53.6."
       },
       "color": "#432",
       "bgcolor": "#653"
@@ -4408,7 +4501,7 @@
   ],
   "links": [
     [
-      157,
+      163,
       "model",
       0,
       "shift",
@@ -4416,7 +4509,7 @@
       "MODEL"
     ],
     [
-      158,
+      164,
       "shift",
       0,
       "attention",
@@ -4424,7 +4517,7 @@
       "MODEL"
     ],
     [
-      159,
+      165,
       "text",
       0,
       "text_device",
@@ -4432,7 +4525,7 @@
       "CLIP"
     ],
     [
-      160,
+      166,
       "text_device",
       0,
       "text_memory",
@@ -4440,7 +4533,7 @@
       "CLIP"
     ],
     [
-      161,
+      167,
       "attention",
       0,
       "adapter",
@@ -4448,7 +4541,7 @@
       "MODEL"
     ],
     [
-      162,
+      168,
       "source",
       0,
       "components",
@@ -4456,7 +4549,7 @@
       "VIDEO"
     ],
     [
-      163,
+      169,
       "components",
       0,
       "dimensions",
@@ -4464,7 +4557,7 @@
       "IMAGE"
     ],
     [
-      164,
+      170,
       "dimensions",
       0,
       "green",
@@ -4472,7 +4565,7 @@
       "INT"
     ],
     [
-      165,
+      171,
       "dimensions",
       1,
       "green",
@@ -4480,7 +4573,7 @@
       "INT"
     ],
     [
-      166,
+      172,
       "sam",
       1,
       "subject",
@@ -4488,7 +4581,7 @@
       "CLIP"
     ],
     [
-      167,
+      173,
       "components",
       0,
       "first_frame",
@@ -4496,7 +4589,7 @@
       "IMAGE"
     ],
     [
-      168,
+      174,
       "sam",
       0,
       "detect",
@@ -4504,7 +4597,7 @@
       "MODEL"
     ],
     [
-      169,
+      175,
       "first_frame",
       0,
       "detect",
@@ -4512,7 +4605,7 @@
       "IMAGE"
     ],
     [
-      170,
+      176,
       "subject",
       0,
       "detect",
@@ -4520,7 +4613,7 @@
       "CONDITIONING"
     ],
     [
-      171,
+      177,
       "sam",
       0,
       "track",
@@ -4528,7 +4621,7 @@
       "MODEL"
     ],
     [
-      172,
+      178,
       "components",
       0,
       "track",
@@ -4536,7 +4629,7 @@
       "IMAGE"
     ],
     [
-      173,
+      179,
       "detect",
       0,
       "track",
@@ -4544,7 +4637,7 @@
       "MASK"
     ],
     [
-      174,
+      180,
       "subject",
       0,
       "track",
@@ -4552,7 +4645,7 @@
       "CONDITIONING"
     ],
     [
-      175,
+      181,
       "track",
       0,
       "mask",
@@ -4560,7 +4653,7 @@
       "SAM3_TRACK_DATA"
     ],
     [
-      176,
+      182,
       "mask",
       0,
       "binary_mask",
@@ -4568,7 +4661,7 @@
       "MASK"
     ],
     [
-      177,
+      183,
       "binary_mask",
       0,
       "grow_mask",
@@ -4576,7 +4669,7 @@
       "MASK"
     ],
     [
-      178,
+      184,
       "components",
       0,
       "green_guide",
@@ -4584,7 +4677,7 @@
       "IMAGE"
     ],
     [
-      179,
+      185,
       "green",
       0,
       "green_guide",
@@ -4592,7 +4685,7 @@
       "IMAGE"
     ],
     [
-      180,
+      186,
       "grow_mask",
       0,
       "green_guide",
@@ -4600,7 +4693,7 @@
       "MASK"
     ],
     [
-      181,
+      187,
       "dimensions",
       2,
       "plan",
@@ -4608,7 +4701,7 @@
       "INT"
     ],
     [
-      184,
+      190,
       "review",
       4,
       "window",
@@ -4616,7 +4709,7 @@
       "IMAGE"
     ],
     [
-      185,
+      191,
       "review",
       3,
       "window",
@@ -4624,7 +4717,7 @@
       "H3_RELAY_WINDOWS"
     ],
     [
-      187,
+      193,
       "start",
       4,
       "window",
@@ -4632,7 +4725,7 @@
       "H3_RELAY_WINDOW_STATE"
     ],
     [
-      189,
+      195,
       "anchor",
       0,
       "window",
@@ -4640,7 +4733,7 @@
       "IMAGE"
     ],
     [
-      196,
+      202,
       "reference_conditioning",
       0,
       "history",
@@ -4648,7 +4741,7 @@
       "CONDITIONING"
     ],
     [
-      197,
+      203,
       "reference_conditioning",
       1,
       "history",
@@ -4656,7 +4749,7 @@
       "LATENT"
     ],
     [
-      198,
+      204,
       "video_vae",
       0,
       "history",
@@ -4664,7 +4757,7 @@
       "VAE"
     ],
     [
-      199,
+      205,
       "audio_vae",
       0,
       "history",
@@ -4672,7 +4765,7 @@
       "VAE"
     ],
     [
-      200,
+      206,
       "window",
       3,
       "history",
@@ -4680,7 +4773,7 @@
       "IMAGE"
     ],
     [
-      201,
+      207,
       "window",
       7,
       "history",
@@ -4688,7 +4781,7 @@
       "INT"
     ],
     [
-      202,
+      208,
       "window",
       4,
       "history",
@@ -4696,7 +4789,7 @@
       "AUDIO"
     ],
     [
-      203,
+      209,
       "history",
       0,
       "guide",
@@ -4704,7 +4797,7 @@
       "CONDITIONING"
     ],
     [
-      204,
+      210,
       "history",
       1,
       "guide",
@@ -4712,7 +4805,7 @@
       "LATENT"
     ],
     [
-      205,
+      211,
       "video_vae",
       0,
       "guide",
@@ -4720,7 +4813,7 @@
       "VAE"
     ],
     [
-      206,
+      212,
       "window",
       0,
       "guide",
@@ -4728,7 +4821,31 @@
       "IMAGE"
     ],
     [
-      207,
+      213,
+      "adapter",
+      0,
+      "sampling_memory",
+      0,
+      "MODEL"
+    ],
+    [
+      214,
+      "history",
+      1,
+      "sampling_memory",
+      1,
+      "LATENT"
+    ],
+    [
+      215,
+      "guide",
+      0,
+      "sampling_memory",
+      2,
+      "CONDITIONING"
+    ],
+    [
+      216,
       "window",
       10,
       "noise",
@@ -4736,15 +4853,15 @@
       "INT"
     ],
     [
-      208,
-      "adapter",
+      217,
+      "sampling_memory",
       0,
       "guider",
       0,
       "MODEL"
     ],
     [
-      209,
+      218,
       "guide",
       0,
       "guider",
@@ -4752,7 +4869,7 @@
       "CONDITIONING"
     ],
     [
-      210,
+      219,
       "guide",
       0,
       "guider",
@@ -4760,7 +4877,7 @@
       "CONDITIONING"
     ],
     [
-      211,
+      220,
       "adapter",
       0,
       "schedule",
@@ -4768,7 +4885,7 @@
       "MODEL"
     ],
     [
-      212,
+      221,
       "noise",
       0,
       "sample",
@@ -4776,7 +4893,7 @@
       "NOISE"
     ],
     [
-      213,
+      222,
       "guider",
       0,
       "sample",
@@ -4784,7 +4901,7 @@
       "GUIDER"
     ],
     [
-      214,
+      223,
       "sampler",
       0,
       "sample",
@@ -4792,7 +4909,7 @@
       "SAMPLER"
     ],
     [
-      215,
+      224,
       "schedule",
       0,
       "sample",
@@ -4800,7 +4917,7 @@
       "SIGMAS"
     ],
     [
-      216,
+      225,
       "history",
       1,
       "sample",
@@ -4808,7 +4925,7 @@
       "LATENT"
     ],
     [
-      217,
+      226,
       "sample",
       0,
       "separate",
@@ -4816,7 +4933,7 @@
       "LATENT"
     ],
     [
-      218,
+      227,
       "separate",
       0,
       "decode",
@@ -4824,7 +4941,7 @@
       "LATENT"
     ],
     [
-      219,
+      228,
       "video_vae",
       0,
       "decode",
@@ -4832,7 +4949,7 @@
       "VAE"
     ],
     [
-      220,
+      229,
       "decode",
       0,
       "append",
@@ -4840,7 +4957,7 @@
       "IMAGE"
     ],
     [
-      221,
+      230,
       "window",
       12,
       "append",
@@ -4848,7 +4965,7 @@
       "H3_RELAY_WINDOW"
     ],
     [
-      222,
+      231,
       "start",
       4,
       "append",
@@ -4856,7 +4973,7 @@
       "H3_RELAY_WINDOW_STATE"
     ],
     [
-      223,
+      232,
       "decode_audio",
       0,
       "append",
@@ -4864,7 +4981,7 @@
       "AUDIO"
     ],
     [
-      224,
+      233,
       "append",
       0,
       "end",
@@ -4872,7 +4989,7 @@
       "H3_RELAY_WINDOW_STATE"
     ],
     [
-      225,
+      234,
       "append",
       0,
       "end",
@@ -4880,7 +4997,7 @@
       "H3_RELAY_WINDOW_STATE"
     ],
     [
-      226,
+      235,
       "end",
       0,
       "finish",
@@ -4888,7 +5005,7 @@
       "H3_RELAY_WINDOW_STATE"
     ],
     [
-      227,
+      236,
       "finish",
       0,
       "video",
@@ -4896,7 +5013,7 @@
       "IMAGE"
     ],
     [
-      228,
+      237,
       "finish",
       2,
       "video",
@@ -4904,7 +5021,7 @@
       "FLOAT"
     ],
     [
-      230,
+      239,
       "plan",
       0,
       "review",
@@ -4912,7 +5029,7 @@
       "H3_RELAY_WINDOW"
     ],
     [
-      231,
+      240,
       "green_guide",
       0,
       "review",
@@ -4920,7 +5037,7 @@
       "IMAGE"
     ],
     [
-      232,
+      241,
       "anchor",
       0,
       "review",
@@ -4928,7 +5045,7 @@
       "IMAGE"
     ],
     [
-      233,
+      242,
       "separate",
       1,
       "decode_audio",
@@ -4936,7 +5053,7 @@
       "LATENT"
     ],
     [
-      234,
+      243,
       "audio_vae",
       0,
       "decode_audio",
@@ -4944,7 +5061,7 @@
       "VAE"
     ],
     [
-      183,
+      189,
       "review",
       1,
       "start",
@@ -4952,7 +5069,7 @@
       "H3_RELAY_WINDOW_STATE"
     ],
     [
-      182,
+      188,
       "review",
       2,
       "start",
@@ -4960,7 +5077,7 @@
       "INT"
     ],
     [
-      229,
+      238,
       "video",
       0,
       "save",
@@ -4968,7 +5085,7 @@
       "VIDEO"
     ],
     [
-      188,
+      194,
       "components",
       2,
       "window",
@@ -4976,7 +5093,7 @@
       "FLOAT"
     ],
     [
-      186,
+      192,
       "start",
       0,
       "window",
@@ -4984,7 +5101,7 @@
       "INT"
     ],
     [
-      190,
+      196,
       "text_memory",
       0,
       "reference_conditioning",
@@ -4992,7 +5109,7 @@
       "CLIP"
     ],
     [
-      195,
+      201,
       "window",
       11,
       "reference_conditioning",
@@ -5000,7 +5117,7 @@
       "IMAGE"
     ],
     [
-      194,
+      200,
       "window",
       5,
       "reference_conditioning",
@@ -5008,7 +5125,7 @@
       "IMAGE"
     ],
     [
-      191,
+      197,
       "dimensions",
       0,
       "reference_conditioning",
@@ -5016,7 +5133,7 @@
       "INT"
     ],
     [
-      192,
+      198,
       "dimensions",
       1,
       "reference_conditioning",
@@ -5024,7 +5141,7 @@
       "INT"
     ],
     [
-      193,
+      199,
       "window",
       8,
       "reference_conditioning",

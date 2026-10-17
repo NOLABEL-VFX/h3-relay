@@ -59,6 +59,9 @@ def sampling_workspace(model, activation_memory_gib, management, wrapper_type):
             return executor(*args, **kwargs)
         finally:
             base.memory_required = previous
+            if management.vram_state != management.VRAMState.HIGH_VRAM:
+                management.unload_all_models()
+                logging.info("H3 sampling stage: released inactive model before native decoding")
 
     patched.add_wrapper(wrapper_type, scoped)
     return patched

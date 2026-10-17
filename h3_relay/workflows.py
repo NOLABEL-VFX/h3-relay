@@ -24,7 +24,7 @@ def models(removal=False):
         graph["turbo"] = node("LoraLoaderModelOnly", model=["attention", 0],
             lora_name="minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors", strength_model=1.)
     graph["adapter"] = node("LoraLoaderModelOnly", model=["attention" if removal else "turbo", 0],
-        lora_name="H3-Person-Remover-V1.safetensors" if removal else "h3-character-swap-v1/h3_character_swap_pro4500_1000.safetensors",
+        lora_name="H3-Person-Remover-V1.safetensors" if removal else "h3-v2-challenge-eval-20261013/v2-1000.safetensors",
         strength_model=1.)
     return graph
 
@@ -105,11 +105,9 @@ def loop(graph, frames, count, audio=None, removal=False, use_anchor=False, use_
                      {"audio_vae": ["audio_vae", 0], "audio": ["window", 2]})
         graph["guide"] = node("MiniMaxH3AddGuide", "Native target guide", **guide)
         positive = ["guide", 0]
-    sampling_model = ["adapter", 0]
-    if not removal:
-        graph["sampling_memory"] = node("H3RelaySamplingMemory", model=sampling_model,
-            latent=latent, conditioning=positive, activation_memory_gib=17.)
-        sampling_model = ["sampling_memory", 0]
+    graph["sampling_memory"] = node("H3RelaySamplingMemory", model=["adapter", 0],
+        latent=latent, conditioning=positive, activation_memory_gib=4. if removal else 17.)
+    sampling_model = ["sampling_memory", 0]
     graph.update({
         "noise": node("RandomNoise", noise_seed=["window", 10]),
         "guider": node("CFGGuider", model=sampling_model, positive=positive, negative=positive, cfg=1.),

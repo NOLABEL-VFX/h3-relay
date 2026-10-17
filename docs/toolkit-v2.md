@@ -69,6 +69,8 @@ Both downloadable canvas graphs must pass exact input/connection round trips.
   this handoff. H3RelaySamplingMemory supplies the existing Character Swap
   17 GiB activation-workspace estimate to the native sampler. Stock estimation
   otherwise loaded 19.3 GiB of weights and failed on its first sampling step.
+  Person Removal uses a 4 GiB activation estimate at its qualified 22-frame
+  window; the model is released after sampling so native decoding has room.
   These policies change residency only and respect explicit high-VRAM mode.
 - Optional runtime compatibility fixes and app-owned lifecycle hooks must be
   isolated from model/timeline semantics.

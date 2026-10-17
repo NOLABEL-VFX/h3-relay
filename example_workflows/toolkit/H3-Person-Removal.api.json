@@ -481,6 +481,27 @@
       "title": "Native target guide"
     }
   },
+  "sampling_memory": {
+    "class_type": "H3RelaySamplingMemory",
+    "inputs": {
+      "model": [
+        "adapter",
+        0
+      ],
+      "latent": [
+        "history",
+        1
+      ],
+      "conditioning": [
+        "guide",
+        0
+      ],
+      "activation_memory_gib": 4.0
+    },
+    "_meta": {
+      "title": "H3RelaySamplingMemory"
+    }
+  },
   "noise": {
     "class_type": "RandomNoise",
     "inputs": {
@@ -497,7 +518,7 @@
     "class_type": "CFGGuider",
     "inputs": {
       "model": [
-        "adapter",
+        "sampling_memory",
         0
       ],
       "positive": [

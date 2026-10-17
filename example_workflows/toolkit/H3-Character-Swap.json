@@ -1,5 +1,5 @@
 {
-  "id": "cc16b777-845f-4369-a0c6-bfd94825f42d",
+  "id": "0d94d3f6-cd4c-45a5-9029-18b2ffe9973b",
   "revision": 0,
   "last_node_id": 5,
   "last_link_id": 267,
@@ -576,11 +576,11 @@
         "Node name for S&R": "LoraLoaderModelOnly"
       },
       "widgets_values": [
-        "h3-character-swap-v1/h3_character_swap_pro4500_1000.safetensors",
+        "h3-v2-challenge-eval-20261013/v2-1000.safetensors",
         1
       ],
       "widgets_values_named": {
-        "lora_name": "h3-character-swap-v1/h3_character_swap_pro4500_1000.safetensors",
+        "lora_name": "h3-v2-challenge-eval-20261013/v2-1000.safetensors",
         "strength_model": 1
       },
       "color": "#30353d",
@@ -4570,10 +4570,10 @@
       "title": "02 \u00b7 Models",
       "properties": {},
       "widgets_values": [
-        "## 02 \u00b7 Models\n\nUse the pinned Ref2VA INT8 model, Qwen encoder and H3 video/audio VAEs. Character Swap uses FL2V Turbo 8-step plus the Character Swap V1 LoRA, both at strength 1. Keep 8 steps, normal scheduler, CFG 1 and er_sde.\n\nText Stage Memory releases inactive models between VAE and Qwen encoding in normal residency mode; high-VRAM mode remains unchanged. Model files and license links are documented with the workflow. ComfyUI must support native Start Loop / End Loop. Qualified core: 79be670e2d9be63e238785af307369d2b9039ed1; frontend 1.53.6."
+        "## 02 \u00b7 Models\n\nUse the pinned Ref2VA INT8 model, Qwen encoder and H3 video/audio VAEs. Character Swap uses FL2V Turbo 8-step plus the Character Swap V1.5 LoRA, both at strength 1. Keep 8 steps, normal scheduler, CFG 1 and er_sde.\n\nText Stage Memory releases inactive models between VAE and Qwen encoding in normal residency mode; high-VRAM mode remains unchanged. Sampling Workspace supplies the tested activation estimate and releases the diffusion model before decoding. Model files and license links: https://github.com/akatz-ai/h3-relay/tree/main/example_workflows/toolkit ComfyUI must support native Start Loop / End Loop. Qualified core: 79be670e2d9be63e238785af307369d2b9039ed1; frontend 1.53.6."
       ],
       "widgets_values_named": {
-        "text": "## 02 \u00b7 Models\n\nUse the pinned Ref2VA INT8 model, Qwen encoder and H3 video/audio VAEs. Character Swap uses FL2V Turbo 8-step plus the Character Swap V1 LoRA, both at strength 1. Keep 8 steps, normal scheduler, CFG 1 and er_sde.\n\nText Stage Memory releases inactive models between VAE and Qwen encoding in normal residency mode; high-VRAM mode remains unchanged. Model files and license links are documented with the workflow. ComfyUI must support native Start Loop / End Loop. Qualified core: 79be670e2d9be63e238785af307369d2b9039ed1; frontend 1.53.6."
+        "text": "## 02 \u00b7 Models\n\nUse the pinned Ref2VA INT8 model, Qwen encoder and H3 video/audio VAEs. Character Swap uses FL2V Turbo 8-step plus the Character Swap V1.5 LoRA, both at strength 1. Keep 8 steps, normal scheduler, CFG 1 and er_sde.\n\nText Stage Memory releases inactive models between VAE and Qwen encoding in normal residency mode; high-VRAM mode remains unchanged. Sampling Workspace supplies the tested activation estimate and releases the diffusion model before decoding. Model files and license links: https://github.com/akatz-ai/h3-relay/tree/main/example_workflows/toolkit ComfyUI must support native Start Loop / End Loop. Qualified core: 79be670e2d9be63e238785af307369d2b9039ed1; frontend 1.53.6."
       },
       "color": "#432",
       "bgcolor": "#653"

@@ -111,7 +111,7 @@
         "turbo",
         0
       ],
-      "lora_name": "h3-character-swap-v1/h3_character_swap_pro4500_1000.safetensors",
+      "lora_name": "h3-v2-challenge-eval-20261013/v2-1000.safetensors",
       "strength_model": 1.0
     },
     "_meta": {
