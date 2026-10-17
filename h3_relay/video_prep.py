@@ -20,7 +20,7 @@ MAX_FRAMES = 3592  # largest 17n+5 value within the installed H3 node's 3600 lim
 PIXEL_BUDGETS = {"480": 500_000, "768": 1_000_000}
 
 
-def canvas_dimensions(width, height, resolution):
+def canvas_dimensions(width, height, resolution, preserve_aligned=False):
     """Nearest shape to the ideal area-scaled canvas, strictly within the cap.
 
     Squared log distances give each axis equal relative weight. Searching the
@@ -29,6 +29,8 @@ def canvas_dimensions(width, height, resolution):
     budget = PIXEL_BUDGETS[resolution]
     if not all(math.isfinite(x) and x > 0 for x in (width, height)):
         raise ValueError("Video has invalid display dimensions.")
+    if preserve_aligned and width * height <= budget and width % 32 == 0 and height % 32 == 0:
+        return int(width), int(height)
     ratio = width / height
     ideal_width, ideal_height = math.sqrt(budget * ratio), math.sqrt(budget / ratio)
     candidates = []
@@ -74,6 +76,9 @@ def requested_window(duration_seconds):
 
 
 class LabsH3PrepareVideo:
+    # The old node retains its duration/size policy for saved workflows. New
+    # toolkit workflows use source-exact timing through H3RelayPrepareSource.
+    SOURCE_EXACT = False
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
@@ -94,7 +99,9 @@ class LabsH3PrepareVideo:
     def prepare(self, video, resolution, duration_seconds=0.0):
         if resolution not in ("480", "768"):
             raise ValueError("Choose 480 (0.5 MP) or 768 (1.0 MP).")
-        requested = requested_window(duration_seconds)
+        requested = requested_window(duration_seconds)  # includes validation
+        if self.SOURCE_EXACT and duration_seconds > 0:
+            requested = min(MAX_FRAMES, max(1, math.floor(duration_seconds * FPS)))
         # Save through the VideoInput API: this honors existing trim/crop wrappers,
         # unlike reading their underlying get_stream_source() directly.
         source = video.get_stream_source()
@@ -105,18 +112,19 @@ class LabsH3PrepareVideo:
                 video.save_to(source)
             output = str(Path(directory) / "prepared.mkv")
             probe = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0",
-                "-show_entries", "stream=width,height,sample_aspect_ratio:stream_side_data=rotation",
+                "-show_streams",
                 "-of", "json", source], check=True, capture_output=True, timeout=30)
             streams = json.loads(probe.stdout).get("streams", [])
             if not streams:
                 raise ValueError("The upload does not contain a video stream.")
-            target_width, target_height = canvas_dimensions(*display_dimensions(streams[0]), resolution)
+            target_width, target_height = canvas_dimensions(*display_dimensions(streams[0]), resolution,
+                                                            preserve_aligned=self.SOURCE_EXACT)
             # FFmpeg handles display rotation; dar includes non-square pixels.
             # Scale before decoding to a float tensor, then crop (never stretch).
             filters = (
-                "setpts=PTS-STARTPTS,fps=fps=24:round=near:eof_action=pass,"
-                f"scale=w='ceil(max({target_width},{target_height}*dar))':"
-                f"h='ceil(max({target_height},{target_width}/dar))':flags=lanczos,"
+                f"setpts=PTS-STARTPTS,fps=fps=24:round=near:eof_action={'round' if self.SOURCE_EXACT else 'pass'},"
+                f"scale=w='ceil(max({target_width},{target_height}*dar)-1e-6)':"
+                f"h='ceil(max({target_height},{target_width}/dar)-1e-6)':flags=lanczos,"
                 f"setsar=1,crop=w={target_width}:h={target_height}"
             )
             frame_limit = requested if requested is not None else MAX_FRAMES + 1
@@ -126,7 +134,7 @@ class LabsH3PrepareVideo:
             command = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
                 "-i", source, "-map", "0:v:0", "-map", "0:a:0?", "-vf", filters,
                 "-af", audio_filter, "-frames:v", str(frame_limit),
-                "-c:v", "ffv1", "-threads", "4", "-c:a", "pcm_s16le", output]
+                "-c:v", "ffv1", "-threads", "0", "-c:a", "pcm_s16le", output]
             try:
                 subprocess.run(command, check=True, capture_output=True, timeout=180)
             except subprocess.CalledProcessError as error:
@@ -148,7 +156,8 @@ class LabsH3PrepareVideo:
                    f"H3: {length} frames · {length-count} repeated tail frames · output trimmed to {count}\n"
                    "Aspect-preserving scale; centered crop to 32-pixel grid.")
         if requested is not None:
-            summary += f"\nRequested {duration_seconds:g}s → nearest H3 window {requested} frames ({requested/FPS:.3f}s)."
+            policy = "source limit" if self.SOURCE_EXACT else "nearest H3 window"
+            summary += f"\nRequested {duration_seconds:g}s → {policy} {requested} frames ({requested/FPS:.3f}s)."
             if count < requested:
                 summary += f" Source ends earlier; output stays at {count/FPS:.3f}s."
         else:
