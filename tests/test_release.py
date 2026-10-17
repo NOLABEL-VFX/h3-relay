@@ -112,7 +112,7 @@ class ReleaseMetadataTest(unittest.TestCase):
             "https://i.imgur.com/aiqQI7U.png",
         )
         self.assertEqual(
-            metadata["tool"]["comfy"]["requires-comfyui"], ">=0.32.0"
+            metadata["tool"]["comfy"]["requires-comfyui"], ">=0.37.0"
         )
 
     def test_runtime_python_has_no_dynamic_execution_calls(self):

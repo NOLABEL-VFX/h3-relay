@@ -63,8 +63,13 @@ Both downloadable canvas graphs must pass exact input/connection round trips.
   model provenance and explicit segment history must remain unchanged.
 - Person Remover's lock/reroll/recovery contract uses Review Windows. Native
   iteration caching alone is not durable recovery; GPU/UI validation is pending.
-- The stock reference encoder replaces the copied encoder. Its GPU placement
-  and memory behavior still require qualification at the intended settings.
+- The stock reference encoder replaces the copied encoder. A scoped CLIP policy,
+  H3RelayTextMemory, releases inactive VAEs before native Qwen encoding and
+  releases Qwen afterward. The matched 24 GB test exhausted memory without
+  this handoff. H3RelaySamplingMemory supplies the existing Character Swap
+  17 GiB activation-workspace estimate to the native sampler. Stock estimation
+  otherwise loaded 19.3 GiB of weights and failed on its first sampling step.
+  These policies change residency only and respect explicit high-VRAM mode.
 - Optional runtime compatibility fixes and app-owned lifecycle hooks must be
   isolated from model/timeline semantics.
 - Canvas files must be exported and reloaded through the actual frontend.
@@ -75,7 +80,7 @@ Both downloadable canvas graphs must pass exact input/connection round trips.
 - Update and test the app recipe, allowed node list, graph inputs and output
   adapter together. Install the canonical Relay revision; do not retain a
   second fork of its implementation in the app.
-- Versioning, minimum ComfyUI runtime, Registry status and publication remain
+- Versioning, Registry status and publication remain
   pending until these gates pass.
 
 Initial evidence: 94 CPU tests and the legacy expanded runtime contract pass.
@@ -86,3 +91,5 @@ prefix after a settings change, and restored prepared source pixels without
 re-evaluating their upstream node. Native threshold/dilation/compositing matches
 the legacy green mask exactly. A 16-bit FFV1 round trip preserves every encoded
 sample. These are CPU mechanics checks, not generated-output acceptance.
+
+The package minimum is ComfyUI 0.37.0, which already includes the native loop and video-saving schemas used here. The exact pinned commit above remains the qualified target; its H3 audio resampling implementation differs from the release tag.

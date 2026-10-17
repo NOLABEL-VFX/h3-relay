@@ -60,6 +60,18 @@
       "title": "SelectCLIPDevice"
     }
   },
+  "text_memory": {
+    "class_type": "H3RelayTextMemory",
+    "inputs": {
+      "clip": [
+        "text_device",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "H3RelayTextMemory"
+    }
+  },
   "video_vae": {
     "class_type": "VAELoader",
     "inputs": {
@@ -376,7 +388,7 @@
     "class_type": "MiniMaxH3ReferenceToVideo",
     "inputs": {
       "clip": [
-        "text_device",
+        "text_memory",
         0
       ],
       "prompt": "Remove the green-masked person and reconstruct the background. Preserve the rest of the video, including its camera motion and frame timing.",

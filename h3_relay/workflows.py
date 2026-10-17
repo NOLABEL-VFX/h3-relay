@@ -16,6 +16,7 @@ def models(removal=False):
         "attention": node("ModelAttentionBackend", model=["shift", 0], attention="comfy kitchen attention"),
         "text": node("CLIPLoader", clip_name="qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors", type="minimax", device="default"),
         "text_device": node("SelectCLIPDevice", clip=["text", 0], device="gpu:0"),
+        "text_memory": node("H3RelayTextMemory", clip=["text_device", 0]),
         "video_vae": node("VAELoader", vae_name="minimax_h3_video_vae_fp16.safetensors"),
         "audio_vae": node("VAELoader", vae_name="minimax_h3_audio_vae_fp32.safetensors"),
     }
@@ -85,7 +86,7 @@ def loop(graph, frames, count, audio=None, removal=False, use_anchor=False, use_
     prompt = ("Remove the green-masked person and reconstruct the background. Preserve the rest of the video, including its camera motion and frame timing."
               if removal else "Replace the selected person with the reference character. Preserve source performance, scene and audio timing.")
     graph["reference_conditioning"] = node("MiniMaxH3ReferenceToVideo", "Native H3 reference conditioning",
-        clip=["text_device", 0], prompt=prompt, width=["dimensions", 0], height=["dimensions", 1],
+        clip=["text_memory", 0], prompt=prompt, width=["dimensions", 0], height=["dimensions", 1],
         length=["window", 8], ref_image_size="match", **refs)
     history_args = dict(positive=["reference_conditioning", 0], latent=["reference_conditioning", 1],
         vae=["video_vae", 0], audio_vae=["audio_vae", 0], frames=["window", 3], history_frames=["window", 7],
@@ -104,9 +105,14 @@ def loop(graph, frames, count, audio=None, removal=False, use_anchor=False, use_
                      {"audio_vae": ["audio_vae", 0], "audio": ["window", 2]})
         graph["guide"] = node("MiniMaxH3AddGuide", "Native target guide", **guide)
         positive = ["guide", 0]
+    sampling_model = ["adapter", 0]
+    if not removal:
+        graph["sampling_memory"] = node("H3RelaySamplingMemory", model=sampling_model,
+            latent=latent, conditioning=positive, activation_memory_gib=17.)
+        sampling_model = ["sampling_memory", 0]
     graph.update({
         "noise": node("RandomNoise", noise_seed=["window", 10]),
-        "guider": node("CFGGuider", model=["adapter", 0], positive=positive, negative=positive, cfg=1.),
+        "guider": node("CFGGuider", model=sampling_model, positive=positive, negative=positive, cfg=1.),
         "sampler": node("KSamplerSelect", sampler_name="er_sde"),
         "schedule": node("BasicScheduler", model=["adapter", 0], scheduler="simple" if removal else "normal",
                          steps=12 if removal else 8, denoise=1.),
