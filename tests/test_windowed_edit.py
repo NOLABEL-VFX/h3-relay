@@ -8,11 +8,7 @@ from unittest.mock import patch
 import torch
 
 ROOT = Path(__file__).parents[1]
-def load(name):
-    spec = importlib.util.spec_from_file_location(name, ROOT / 'h3_relay' / (name + '.py'))
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+from module_fixture import load
 m = load('windowed_edit')
 remover = load('person_remover')
 

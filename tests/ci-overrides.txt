@@ -1,2 +1,2 @@
-# The pinned VSA ComfyUI branch still declares kitchen 0.2.31.
-comfy-kitchen==0.2.33
+# Match the qualified native-loop runtime.
+comfy-kitchen==0.2.35

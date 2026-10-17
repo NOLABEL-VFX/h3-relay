@@ -26,3 +26,15 @@ source is not redistributed by H3 Relay.
 The vendored code has been adapted and combined for H3 Relay. See
 `UPSTREAMS.md` for source URLs, snapshot commits, and the local adaptation
 boundary.
+
+## Version-bounded Comfy Kitchen INT8 compatibility
+
+`h3_relay/compat/triton_int8_large.py` retains two Apache-2.0 Triton kernels
+from Comfy Kitchen with 64-bit pointer offsets. Copyright notices and license
+headers are retained. This is the same qualified correction used by Character
+Swap 1.1.6, applied only to Comfy Kitchen 0.2.35 on CUDA. It adds no workflow
+node and changes no sampling policy. Remove the adapter when the qualified
+upstream release includes the fix.
+
+Upstream issue: https://github.com/Comfy-Org/comfy-kitchen/issues/136
+Upstream proposed fix: https://github.com/Comfy-Org/comfy-kitchen/pull/172

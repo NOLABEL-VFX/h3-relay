@@ -1,7 +1,7 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const NODES = new Set(["H3RelayPersonRemover", "H3RelayWindowedEdit"]);
+const NODES = new Set(["H3RelayPersonRemover", "H3RelayWindowedEdit", "H3RelayReviewWindows"]);
 const mounts = new Set();
 const rootGraph = () => app.rootGraph ?? app.graph;
 const workflowId = () => String(rootGraph()?.id ?? "");
@@ -196,7 +196,7 @@ function render(state, run) {
     state.run = run;
     state.revision++;
     state.node.properties.h3_removal_preview_run = run.run_id;
-    state.progress.textContent = `${run.segments.length}/${run.total} windows · ${run.window_frames}f${run.window_plan ? " max · adaptive" : ""}` +
+    state.progress.textContent = `${run.segments.length}/${run.total} windows · ${run.window_frames}f${["adaptive", "adaptive-target-v1"].includes(run.window_policy) ? " max · adaptive" : ""}` +
         ` · master seed ${run.seed}` +
         (run.status === "complete" ? " · complete" : run.status === "stopped" ? " · stopped" : "") +
         (run.controls_reset ? " · inputs/settings changed — fresh windows" : "");

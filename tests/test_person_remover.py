@@ -6,9 +6,8 @@ import unittest
 from unittest.mock import patch
 import torch
 
-spec = importlib.util.spec_from_file_location('person_remover', Path(__file__).parents[1] / 'h3_relay/person_remover.py')
-m = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(m)
+from module_fixture import load
+m = load('person_remover')
 
 class TimelineTests(unittest.TestCase):
     def test_expansion_keeps_history_separate_and_returns_cached_preview_identity(self):

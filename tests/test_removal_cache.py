@@ -147,8 +147,8 @@ class CacheTests(unittest.TestCase):
             m.plan(json.dumps(data), self.scope, "config", [0, 21, 42], 22, 64, 999)
 
     def test_adaptive_checkpoint_sizes_metadata_and_prefix_reroll(self):
-        spec = importlib.util.spec_from_file_location("windowed_edit", Path(__file__).parents[1] / "h3_relay/windowed_edit.py")
-        edit = importlib.util.module_from_spec(spec); spec.loader.exec_module(edit)
+        from module_fixture import load
+        edit = load("windowed_edit")
         plan = edit.plan_windows(144)
         frames = torch.arange(124).float().reshape(-1, 1, 1, 1)
         key = m.configuration_key(frames, frames[:1], {'policy': edit.WINDOW_POLICY, 'plan': plan}, {}, '18')

@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.0.0 — breaking workflow and app recipe changes
+
+- Move the recommended Character Swap V1.5 and Person Remover workflows to
+  native ComfyUI loaders, conditioning, SAM tracking, sampling, VAE operations,
+  loops and video saving. Relay supplies a smaller reusable timeline, history,
+  mask-policy and durable-review surface.
+- Update the Character Swap tool to the canonical Relay package and new graph
+  contracts. Old app recipes and new toolkit graphs are not interchangeable;
+  update the tool, Relay nodes and workflow together. Existing Relay node IDs
+  remain registered for older canvases. ComfyUI 0.37.0 or later is required.
+- Include grouped workflows, model setup notes, source-aligned continuation and
+  restart-safe window rerolls. See [migration and qualification](docs/toolkit-v2.md).
+
 ## 1.0.3
 
 - Publish the current stable nodes to Comfy Registry, including

@@ -1,28 +1,11 @@
 """Source-aligned editing on H3's frame grid, with incremental window previews."""
 from __future__ import annotations
-
-WINDOW_SIZES = tuple(range(22, 363, 17))
-
-
-def validate_window_size(value) -> int:
-    frames = int(value)
-    if frames not in WINDOW_SIZES:
-        raise ValueError("Window size must be 22, 39, 56, ... 362 frames (17n + 5)")
-    return frames
+from .planning import WINDOW_SIZES, validate_window_size, window_starts
 
 
-def window_starts(count: int, window_frames: int = 22) -> list[int]:
-    window_frames = validate_window_size(window_frames)
-    if count < 1:
-        raise ValueError("Source video has no frames")
-    starts = [0]
-    stride = window_frames - 1
-    while starts[-1] + window_frames < count:
-        candidate = min(starts[-1] + stride, count - window_frames)
-        # An 18-frame history needs a boundary at frame 17 or later.
-        # Retain the original 22-frame scheduling behavior for short tails.
-        starts.append(max(stride, candidate))
-    return starts
+
+
+
 
 
 class H3RelayGreenMask:
