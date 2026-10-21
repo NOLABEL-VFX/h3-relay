@@ -16,6 +16,28 @@ import comfy.model_management
 import comfy.utils
 
 
+def _saved_mask_path(mask_file):
+    """Validate before change detection as well as execution opens the file."""
+    root = Path(folder_paths.get_input_directory()).resolve()
+    try:
+        path = (root / mask_file).resolve()
+    except (OSError, RuntimeError) as exc:
+        raise ValueError('Mask path cannot be resolved') from exc
+    if not path.is_relative_to(root):
+        raise ValueError('Mask must be inside ComfyUI input')
+    if not path.is_file():
+        raise ValueError('Mask must be an existing regular file inside ComfyUI input')
+    return path
+
+
+def _mask_sha256(path):
+    digest = hashlib.sha256()
+    with path.open('rb') as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b''):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def expand_masks(raw, radius):
     if not 0 <= radius <= 256:raise ValueError('Expansion must be between 0 and 256 pixels')
     result=[]
@@ -37,10 +59,9 @@ class SavedPersonMask:
     CATEGORY='H3 Relay/mask tools'
     @classmethod
     def IS_CHANGED(cls,mask_file,**kwargs):
-        return hashlib.sha256((Path(folder_paths.get_input_directory())/mask_file).read_bytes()).hexdigest()
+        return _mask_sha256(_saved_mask_path(mask_file))
     def load(self,mask_file,images,source_frames,expansion_px):
-        root=Path(folder_paths.get_input_directory()).resolve();p=(root/mask_file).resolve()
-        if not p.is_relative_to(root):raise ValueError('Mask must be inside ComfyUI input')
+        p = _saved_mask_path(mask_file)
         with np.load(p,allow_pickle=False) as z:
             raw=z['mask']
             if 'present' in z and not z['present'].all():raise ValueError('Saved mask has unreviewed missing frames')
@@ -56,7 +77,7 @@ class SavedPersonMask:
             n=len(images)-source_frames
             expanded=np.concatenate([expanded,np.repeat(expanded[-1:],n,0)])
             raw=np.concatenate([raw,np.repeat(raw[-1:],n,0)])
-        provenance=json.dumps({'file':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'source_frames':source_frames,'prepared_frames':len(images),'dimensions':[w,h],'expansion_px':expansion_px,'metric':'euclidean_outward_radius','anchor_auto_expansion':False})
+        provenance=json.dumps({'file':str(p),'sha256':_mask_sha256(p),'source_frames':source_frames,'prepared_frames':len(images),'dimensions':[w,h],'expansion_px':expansion_px,'metric':'euclidean_outward_radius','anchor_auto_expansion':False})
         return(torch.from_numpy(expanded),torch.from_numpy(raw),provenance)
 
 

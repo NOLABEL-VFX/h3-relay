@@ -30,17 +30,11 @@ anchor_mode
 """
 
 import logging
-import os
 
 import comfy.utils
-import folder_paths
 import node_helpers
 import torch
 
-try:
-    from safetensors.torch import load_file as _st_load, save_file as _st_save
-except ImportError:  # ComfyUI always ships safetensors; belt and braces
-    _st_load = _st_save = None
 
 from .patch_layout import (
     MC_KEY,
@@ -171,6 +165,17 @@ def _resize(image, width, height, crop):
     return samples.movedim(1, -1)
 
 
+def _validate_audio_latent(latent, source):
+    shape = tuple(getattr(latent, "shape", ()))
+    if (len(shape) != 4 or shape[0] != 1 or shape[1:3] != (32, 2)
+            or shape[3] < 1):
+        raise ValueError(
+            "h3_motion_context: %s must have H3 stereo latent shape "
+            "[1,32,2,T] with T > 0, got %s. Use the MiniMax H3 audio VAE "
+            "and an unmodified H3 AV checkpoint; do not duplicate packed rows."
+            % (source, shape))
+
+
 def _encode_tail_audio(audio_vae, audio, seconds):
     """Encode the last `seconds` of a clip's audio with the H3 audio VAE.
 
@@ -195,6 +200,7 @@ def _encode_tail_audio(audio_vae, audio, seconds):
     else:
         waveform = waveform[..., have - want:]
     z = audio_vae.encode(waveform[:1].movedim(1, -1))  # [1, 32, 2, T]
+    _validate_audio_latent(z, "encoded context audio")
     return z, int(z.shape[-1])
 
 
@@ -252,9 +258,7 @@ def _audio_tail_from_latent(latent, a_frames):
         video = video.unsqueeze(0)
     if audio.ndim == 3:  # unbatched [C,2,T]
         audio = audio.unsqueeze(0)
-    if audio.ndim != 4:
-        raise ValueError("h3_motion_context: expected audio latent [B,C,2,T], "
-                         "got shape %s" % (tuple(audio.shape),))
+    _validate_audio_latent(audio, "context_latent audio")
     total_t = int(audio.shape[-1])
     frames = _pixel_frames(int(video.shape[2]))
     overhang = total_t - FRAME_RESCALE * frames
@@ -746,229 +750,8 @@ class MiniMaxH3LoopTrim:
         return (out_images, out_audio, overlap_images, retained)
 
 
-def _resolve_latent_path(path, clip_index=0):
-    """Turn the loader's path input into a concrete file.
-
-    Accepts an absolute path, a path relative to ComfyUI's output folder,
-    or a directory (in either form). For a directory:
-
-      clip_index == 0   the NEWEST .safetensors inside is used. Simple,
-                        but NOT retry-safe: re-rolling a clip loads the
-                        rejected attempt's own save (see the node docs).
-                        Its run counter also numbers ATTEMPTS, not clips.
-      clip_index  > 0   exactly that clip's slot is loaded: clip 1 is
-                        *_00001.safetensors. Auto-mode files carry a
-                        trailing underscore (*_00001_.safetensors) and
-                        are never matched, because their numbers count
-                        runs and could hold a reject.
-    """
-    p = (path or "").strip().strip('"').strip("'")
-    if not p:
-        p = "h3_context"
-    candidates = [p, os.path.join(folder_paths.get_output_directory(), p)]
-    for c in candidates:
-        if os.path.isfile(c):
-            return c
-        if os.path.isdir(c):
-            idx = int(clip_index)
-            if idx > 0:
-                # indexed slots use the natural name: clip 2 lives in
-                # *_00002.safetensors. Auto-mode files carry a trailing
-                # underscore (*_00002_.safetensors) and are deliberately
-                # NOT matched: their numbers count runs, not clips, so a
-                # reject could be sitting in any of them.
-                endings = ("_%05d.safetensors" % idx,
-                           "_clip%03d.safetensors" % idx)  # older versions
-                files = [os.path.join(c, f) for f in os.listdir(c)
-                         if f.endswith(endings)]
-                if not files:
-                    near = [f for f in os.listdir(c)
-                            if f.endswith("_%05d_.safetensors" % idx)]
-                    hint = ""
-                    if near:
-                        hint = (" Found %s, which is an auto-numbered save "
-                                "(trailing underscore = numbered by RUN, so "
-                                "it may be a reject). If it really is clip "
-                                "%d, rename it to drop the trailing "
-                                "underscore: %s" %
-                                (near[0], idx,
-                                 near[0].replace("_%05d_" % idx,
-                                                 "_%05d" % idx)))
-                    raise FileNotFoundError(
-                        "h3_motion_context: no saved latent for clip %d "
-                        "(no *_%05d.safetensors in %s).%s"
-                        % (idx, idx, c, hint))
-            else:
-                files = [os.path.join(c, f) for f in os.listdir(c)
-                         if f.endswith(".safetensors")]
-                if not files:
-                    raise FileNotFoundError(
-                        "h3_motion_context: no saved latents in %s. Run a "
-                        "clip with the Save Latent node first." % c)
-            return max(files, key=os.path.getmtime)
-    raise FileNotFoundError(
-        "h3_motion_context: %r is neither a file nor a folder (also tried "
-        "relative to the ComfyUI output directory)." % p)
-
-
-class MiniMaxH3MotionContextSaveLatent:
-    """Save an H3 AV latent to disk so the NEXT run can load it.
-
-    Wiring the sampler's output straight into context_latent is a cycle:
-    the sampler would be consuming its own result. The latent that motion
-    context needs is the PREVIOUS clip's, which lives in the previous run
-    -- so it has to cross runs through disk, the same way the frames and
-    audio already do. Stock Save/Load Latent can't serialise H3's nested
-    video/audio pair; this saves the two streams side by side.
-    """
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "latent": ("LATENT", {
-                    "tooltip": "The sampler's output latent (the same one "
-                               "you wire into the decode nodes)."}),
-                "filename_prefix": ("STRING", {
-                    "default": "h3_context/clip",
-                    "tooltip": "Saved under the ComfyUI output folder. The "
-                               "default keeps all chain latents in one "
-                               "folder so the Load node can always pick "
-                               "the newest."}),
-                "clip_index": ("INT", {
-                    "default": 0, "min": 0, "max": 9999,
-                    "tooltip": "Which clip of the chain THIS is. Saves to "
-                               "that clip's fixed slot, so a re-roll "
-                               "overwrites its own reject instead of "
-                               "stacking new files. Generating clip 2: "
-                               "set 2 here and 1 on the Load node. 0 = "
-                               "old behaviour, a new numbered file every "
-                               "run (numbers count runs, not clips)."}),
-            },
-        }
-
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("latent_path",)
-    OUTPUT_TOOLTIPS = (
-        "Absolute path of the saved H3 AV safetensors checkpoint.",
-    )
-    FUNCTION = "save"
-    OUTPUT_NODE = True
-    CATEGORY = "conditioning/minimax"
-    DESCRIPTION = ("Save the sampler's AV latent so the next run's Motion "
-                   "Context node can pin audio from it via the matching "
-                   "Load node.")
-
-    def save(self, latent, filename_prefix, clip_index=0):
-        if _st_save is None:
-            raise RuntimeError("h3_motion_context: safetensors is not "
-                               "available; cannot save latents.")
-        parts = _streams_from_latent(latent)
-        if len(parts) < 2:
-            raise ValueError(
-                "h3_motion_context: latent has no audio stream; wire the "
-                "sampler output of an H3 AV graph.")
-        video = parts[0].cpu().contiguous()
-        audio = parts[1].cpu().contiguous()
-        folder, filename, counter, _, _ = folder_paths.get_save_image_path(
-            filename_prefix, folder_paths.get_output_directory())
-        if int(clip_index) > 0:
-            # fixed slot with the natural name: clip 2 -> *_00002. A
-            # re-roll of this clip overwrites its own save, so rejects
-            # never accumulate or get loaded later. Auto mode (below)
-            # keeps a trailing underscore, which is what excludes its
-            # run-numbered files from indexed loading.
-            path = os.path.join(folder, "%s_%05d.safetensors"
-                                % (filename, int(clip_index)))
-        else:
-            path = os.path.join(folder, "%s_%05d_.safetensors"
-                                % (filename, counter))
-        _st_save({"video": video, "audio": audio}, path,
-                 metadata={"format": "h3_motion_context_av_v1"})
-        _LOG.info("h3_motion_context: saved AV latent to %s (video %s, "
-                  "audio %s)", path, tuple(video.shape), tuple(audio.shape))
-        return (path,)
-
-
-class MiniMaxH3MotionContextLoadLatent:
-    """Load a saved H3 AV latent for the context_latent input.
-
-    clip_index means exactly what it says: set it to the clip you want to
-    CONTINUE FROM, and that clip's slot is loaded. Generating clip 2 from
-    clip 1: Load node 1, Save node 2. Re-rolling clip 2 changes nothing --
-    it reloads slot 1 and overwrites slot 2's reject. Accept, then bump
-    both numbers.
-
-    At 0 it loads the newest file in the folder instead. Simple, but NOT
-    retry-safe: a re-roll's newest file is the rejected attempt's own
-    save, so the retry gets conditioned on the audio you just rejected.
-
-    The output is ONLY for the Motion Context node's context_latent input.
-    It is not a decodable latent -- do not wire it into VAE decode.
-    """
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "latent_path": ("STRING", {
-                    "default": "h3_context",
-                    "tooltip": "A saved latent file, or a folder (relative "
-                               "paths resolve against the ComfyUI output "
-                               "directory). Pointing at a specific FILE "
-                               "always loads that file, ignoring "
-                               "clip_index."}),
-                "clip_index": ("INT", {
-                    "default": 0, "min": 0, "max": 9999,
-                    "tooltip": "The clip to CONTINUE FROM: that clip's "
-                               "slot is loaded. Generating clip 2 from "
-                               "clip 1: set 1 here and 2 on the Save "
-                               "node. 0 = newest file in the folder "
-                               "(NOT retry-safe: a re-roll loads its own "
-                               "rejected audio)."}),
-            },
-        }
-
-    RETURN_TYPES = ("LATENT",)
-    RETURN_NAMES = ("context_latent",)
-    OUTPUT_TOOLTIPS = (
-        "Saved previous-clip AV latent for Motion Context's context_latent "
-        "input. Do not send it to VAE Decode.",
-    )
-    FUNCTION = "load"
-    CATEGORY = "conditioning/minimax"
-    DESCRIPTION = ("Load a latent saved by H3 Motion Context Save Latent, "
-                   "for the context_latent input only.")
-
-    @classmethod
-    def IS_CHANGED(cls, latent_path, clip_index=0):
-        # the path string stays constant while the file behind it changes
-        # (newest save, or an overwritten slot), so cache on the resolved
-        # file identity instead -- otherwise ComfyUI would happily serve
-        # a stale latent forever
-        try:
-            p = _resolve_latent_path(latent_path, clip_index)
-            return "%s:%d" % (p, os.stat(p).st_mtime_ns)
-        except Exception:
-            return float("NaN")  # unresolvable: never cache
-
-    def load(self, latent_path, clip_index=0):
-        if _st_load is None:
-            raise RuntimeError("h3_motion_context: safetensors is not "
-                               "available; cannot load latents.")
-        path = _resolve_latent_path(latent_path, clip_index)
-        data = _st_load(path)
-        if "video" not in data or "audio" not in data:
-            raise ValueError(
-                "h3_motion_context: %s is not an h3_motion_context latent "
-                "(missing video/audio streams). Was it saved by the stock "
-                "Save Latent node instead?" % path)
-        _LOG.info("h3_motion_context: loaded AV latent from %s", path)
-        # a plain list, not a NestedTensor: only this repo's context_latent
-        # input accepts it, which is the point -- it cannot be mistaken
-        # for a decodable latent without failing loudly downstream
-        return ({"samples": [data["video"], data["audio"]]},)
-
+# Unregistered upstream disk Save/Load helpers are intentionally not vendored.
+# Relay uses its managed cache adapters for checkpoint I/O.
 
 # The original public Motion Context / Save / Load ids belong to
 # NikoDemon80's upstream pack.  This specialized loop pack keeps its context
