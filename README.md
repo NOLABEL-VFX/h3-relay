@@ -290,7 +290,7 @@ FFmpeg is available on `PATH`, then restart ComfyUI again.
 
 ## Requirements
 
-- ComfyUI 0.32.0 or newer
+- ComfyUI 0.37.0 or newer
 - MiniMax H3 FL2VA and Ref2VA model files
 - Optional experimental FastH3 VSA checkpoint and VSA runtime described in
   `MODELS.md`

@@ -1,4 +1,10 @@
-"""Managed H3 Relay cache and preview publication helpers."""
+"""Managed H3 Relay cache and preview publication helpers.
+
+Containment uses canonical paths, including existing parents of write targets.
+Configured roots and symlinks staying within a root are supported. Managed
+roots must not be writable by an adversary concurrently swapping path entries;
+these checks are not a sandbox against hostile local filesystem mutation.
+"""
 
 from __future__ import annotations
 
@@ -23,19 +29,20 @@ def cache_root() -> str:
         root = os.path.join(
             folder_paths.get_user_directory(), "__h3_relay_cache"
         )
-    return os.path.abspath(root)
+    return os.path.realpath(root)
 
 
 def cache_path(*parts: str) -> str:
     root = cache_root()
-    path = os.path.abspath(os.path.join(root, *[str(part) for part in parts]))
+    path = os.path.realpath(os.path.join(root, *[str(part) for part in parts]))
     if os.path.commonpath([root, path]) != root:
         raise ValueError("H3 Relay cache path escapes its managed root.")
     return path
 
 
 def _root_relative(path: str, root: str) -> str | None:
-    resolved = os.path.abspath(path)
+    resolved = os.path.realpath(path)
+    root = os.path.realpath(root)
     try:
         if os.path.commonpath([root, resolved]) != root:
             return None
@@ -45,16 +52,16 @@ def _root_relative(path: str, root: str) -> str | None:
 
 
 def artifact_uri(path: str) -> str:
-    resolved = os.path.abspath(path)
+    resolved = os.path.realpath(path)
     relative = _root_relative(resolved, cache_root())
     if relative is not None:
         return CACHE_SCHEME + relative.replace(os.sep, "/")
     relative = _root_relative(
-        resolved, os.path.abspath(folder_paths.get_temp_directory())
+        resolved, os.path.realpath(folder_paths.get_temp_directory())
     )
     if relative is not None:
         return TEMP_SCHEME + relative.replace(os.sep, "/")
-    output = os.path.abspath(folder_paths.get_output_directory())
+    output = os.path.realpath(folder_paths.get_output_directory())
     relative = _root_relative(resolved, output)
     if relative is None:
         raise ValueError("H3 Relay artifact is outside cache, temp, and output roots.")
@@ -66,25 +73,25 @@ def resolve_artifact(value: str) -> str:
     if raw.startswith(CACHE_SCHEME):
         return cache_path(*raw[len(CACHE_SCHEME):].split("/"))
     if raw.startswith(TEMP_SCHEME):
-        root = os.path.abspath(folder_paths.get_temp_directory())
-        path = os.path.abspath(os.path.join(
+        root = os.path.realpath(folder_paths.get_temp_directory())
+        path = os.path.realpath(os.path.join(
             root, *raw[len(TEMP_SCHEME):].split("/")
         ))
         if os.path.commonpath([root, path]) != root:
             raise ValueError("H3 Relay temp artifact escapes the temp root.")
         return path
     if os.path.isabs(raw):
-        resolved = os.path.abspath(raw)
+        resolved = os.path.realpath(raw)
         allowed = [
             cache_root(),
-            os.path.abspath(folder_paths.get_temp_directory()),
-            os.path.abspath(folder_paths.get_output_directory()),
+            os.path.realpath(folder_paths.get_temp_directory()),
+            os.path.realpath(folder_paths.get_output_directory()),
         ]
         if not any(_root_relative(resolved, root) is not None for root in allowed):
             raise ValueError("H3 Relay absolute artifact path is unmanaged.")
         return resolved
-    output = os.path.abspath(folder_paths.get_output_directory())
-    resolved = os.path.abspath(os.path.join(output, raw))
+    output = os.path.realpath(folder_paths.get_output_directory())
+    resolved = os.path.realpath(os.path.join(output, raw))
     if os.path.commonpath([output, resolved]) != output:
         raise ValueError("H3 Relay legacy output artifact escapes output root.")
     return resolved
@@ -94,19 +101,19 @@ def _preview_path(cache_file: str) -> str:
     relative = _root_relative(cache_file, cache_root())
     if relative is None:
         raise ValueError("Preview source is not in the managed cache.")
-    root = os.path.abspath(folder_paths.get_temp_directory())
-    path = os.path.abspath(os.path.join(root, "h3_relay", "cache", relative))
+    root = os.path.realpath(folder_paths.get_temp_directory())
+    path = os.path.realpath(os.path.join(root, "h3_relay", "cache", relative))
     if os.path.commonpath([root, path]) != root:
         raise ValueError("H3 Relay preview path escapes the temp root.")
     return path
 
 
 def preview_proxy(path: str) -> tuple[str, str]:
-    resolved = os.path.abspath(path)
-    output = os.path.abspath(folder_paths.get_output_directory())
+    resolved = os.path.realpath(path)
+    output = os.path.realpath(folder_paths.get_output_directory())
     if _root_relative(resolved, output) is not None:
         return resolved, "output"
-    temp = os.path.abspath(folder_paths.get_temp_directory())
+    temp = os.path.realpath(folder_paths.get_temp_directory())
     if _root_relative(resolved, temp) is not None:
         return resolved, "temp"
     if _root_relative(resolved, cache_root()) is None:
@@ -137,7 +144,7 @@ def video_output_item(path: str) -> dict[str, str]:
         folder_paths.get_output_directory()
         if kind == "output" else folder_paths.get_temp_directory()
     )
-    relative = os.path.relpath(proxy, os.path.abspath(root))
+    relative = os.path.relpath(proxy, os.path.realpath(root))
     return {
         "filename": os.path.basename(relative),
         "subfolder": os.path.dirname(relative),
@@ -160,14 +167,19 @@ def _logical_revision_group(path: Path, shot: str) -> str:
     return "/".join(parts[:-1]) + "/" + shot
 
 
-def _revision_groups() -> dict[tuple[str, str], list[Path]]:
+def _cache_files(pattern: str = "*"):
+    """Maintenance must not read or prune through file/directory aliases."""
     root = Path(cache_root())
+    if root.is_dir():
+        for path in root.rglob(pattern):
+            if (not path.is_symlink() and path.is_file()
+                    and _root_relative(str(path), str(root)) is not None):
+                yield path
+
+
+def _revision_groups() -> dict[tuple[str, str], list[Path]]:
     groups: dict[tuple[str, str], list[Path]] = {}
-    if not root.is_dir():
-        return groups
-    for path in root.rglob("*"):
-        if not path.is_file():
-            continue
+    for path in _cache_files():
         match = REVISION_RE.search(path.name)
         if match is None:
             continue
@@ -179,10 +191,7 @@ def _revision_groups() -> dict[tuple[str, str], list[Path]]:
 
 def _protected_revisions() -> set[str]:
     protected: set[str] = set()
-    root = Path(cache_root())
-    if not root.is_dir():
-        return protected
-    for path in root.rglob("*.json"):
+    for path in _cache_files("*.json"):
         if REVISION_RE.search(path.name):
             continue
         try:
@@ -194,18 +203,14 @@ def _protected_revisions() -> set[str]:
 
 
 def cache_stats() -> dict[str, int]:
-    root = Path(cache_root())
     files = 0
     size = 0
-    if root.is_dir():
-        for path in root.rglob("*"):
-            if not path.is_file():
-                continue
-            try:
-                size += path.stat().st_size
-                files += 1
-            except OSError:
-                continue
+    for path in _cache_files():
+        try:
+            size += path.stat().st_size
+            files += 1
+        except OSError:
+            continue
     return {
         "bytes": size,
         "files": files,
