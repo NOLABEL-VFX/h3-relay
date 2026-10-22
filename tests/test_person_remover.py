@@ -42,6 +42,20 @@ class TimelineTests(unittest.TestCase):
         self.assertEqual([n["inputs"]["length"] for n in nodes
                           if n["class_type"] == "MiniMaxH3ReferenceToVideo"], [39, 56])
         self.assertEqual(sum(n["class_type"] == "H3RelaySourceHistory" for n in nodes), 1)
+        guides = [n for n in nodes if n["class_type"] == "MiniMaxH3AddGuide"]
+        first_source = result["expand"][guides[0]["inputs"]["image"][0]]
+        self.assertEqual(first_source["class_type"], "H3RelayRemovalWindow")
+        self.assertEqual(guides[0]["inputs"]["image"][1], 0)
+        later_source = result["expand"][guides[1]["inputs"]["image"][0]]
+        self.assertEqual(later_source["class_type"], "ImageBatch")
+        boundary = result["expand"][later_source["inputs"]["image1"][0]]
+        self.assertEqual(boundary["class_type"], "H3RelayRemovalWindow")
+        self.assertEqual(later_source["inputs"]["image1"][1], 1)
+        tail = result["expand"][later_source["inputs"]["image2"][0]]
+        self.assertEqual(tail["class_type"], "ImageFromBatch")
+        self.assertEqual(tail["inputs"]["batch_index"], 1)
+        self.assertEqual(tail["inputs"]["length"], 38)
+        self.assertEqual(tail["inputs"]["image"], [later_source["inputs"]["image1"][0], 0])
         self.assertEqual([n["inputs"]["start"] for n in nodes
                           if n["class_type"] == "H3RelayRemovalAppend"], [0, 38])
         self.assertEqual(result["ui"], {"h3_removal_run": ["preview-run-id"]})

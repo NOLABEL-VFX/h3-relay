@@ -257,7 +257,8 @@ class H3RelayPersonRemover:
         cache_scope = removal_cache.scope_key(unique_id, extra_pnginfo)
         config_key = removal_cache.configuration_key(masked_source, clean_first_frame,
             {"fps": fps, "prompt": prompt, "steps": steps, "window_frames": window_frames,
-             "master_seed": str(seed), "seed_scheme": removal_cache.SEED_SCHEME},
+             "master_seed": str(seed), "seed_scheme": removal_cache.SEED_SCHEME,
+             "guide_boundary": "clean-continuation-v1"},
             execution_prompt, unique_id)
         window_controls, controls_reset = removal_cache.controls_for_configuration(
             window_controls, cache_scope, config_key)
@@ -299,8 +300,16 @@ class H3RelayPersonRemover:
                                      vae=video_vae, audio_vae=audio_vae, previous_frames=window.out(2),
                                      previous_audio=window.out(3))
                 conditioning, latent = history.out(0), history.out(1)
+            guide_source = window.out(0)
+            if previous is not None:
+                # History already anchors frame zero to the clean boundary. Do not
+                # condition that same frame a second time with the green source.
+                tail = graph.node("ImageFromBatch", image=guide_source,
+                                  batch_index=1, length=window_frames - 1)
+                clean_guide = graph.node("ImageBatch", image1=window.out(1), image2=tail.out(0))
+                guide_source = clean_guide.out(0)
             guide = graph.node("MiniMaxH3AddGuide", positive=conditioning, latent=latent,
-                               vae=video_vae, image=window.out(0), frame_idx=0)
+                               vae=video_vae, image=guide_source, frame_idx=0)
             guider = graph.node("CFGGuider", model=model, positive=guide.out(0), negative=guide.out(0), cfg=1.)
             sample = graph.node("SamplerCustomAdvanced", noise=noise.out(0), guider=guider.out(0),
                                 sampler=sampler.out(0), sigmas=sigmas.out(0), latent_image=latent)
